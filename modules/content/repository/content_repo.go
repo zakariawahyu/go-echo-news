@@ -6,5 +6,5 @@ import (
 )
 
 type ContentRepository interface {
-	GetBySlug(ctx context.Context, slug string) (res entity.Content, err error)
+	GetBySlug(ctx context.Context, slug string) (entity.Content, error)
 }

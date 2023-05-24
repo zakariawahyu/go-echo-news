@@ -6,5 +6,5 @@ import (
 )
 
 type ContentServices interface {
-	GetBySlug(c context.Context, slug string) (res entity.Content, err error)
+	GetBySlug(c context.Context, slug string) entity.ContentResponse
 }

@@ -19,14 +19,13 @@ func NewContentServices(repo repository.ContentRepository, timeout time.Duration
 	}
 }
 
-func (serv *ContentServicesImpl) GetBySlug(c context.Context, slug string) (res entity.Content, err error) {
+func (serv *ContentServicesImpl) GetBySlug(c context.Context, slug string) entity.ContentResponse {
 	ctx, cancel := context.WithTimeout(c, serv.contextTimeout)
 	defer cancel()
 
-	res, err = serv.contentRepo.GetBySlug(ctx, slug)
+	res, err := serv.contentRepo.GetBySlug(ctx, slug)
 	if err != nil {
-		return entity.Content{}, err
+		panic(err)
 	}
-
-	return
+	return entity.NewContentResponse(res)
 }

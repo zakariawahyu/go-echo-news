@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 	"github.com/zakariawahyu/go-echo-news/config"
 	"github.com/zakariawahyu/go-echo-news/modules/content/controller"
@@ -24,6 +25,9 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	e := echo.New()
 
 	e.HTTPErrorHandler = exception.NewHttpErrorHandler(exception.NewErrorStatusCodeMaps()).Handler
+	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		StackSize: 1 << 10, // 1 KB
+	}))
 
 	v1 := e.Group("/v1")
 

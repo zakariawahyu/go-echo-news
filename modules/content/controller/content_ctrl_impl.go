@@ -23,10 +23,7 @@ func (ctrl *ContentControllerImpl) GetBySlug(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	content, err := ctrl.contentServices.GetBySlug(ctx, slug)
-	if err != nil {
-		return err
-	}
+	content := ctrl.contentServices.GetBySlug(ctx, slug)
 
 	return c.JSON(http.StatusOK, &response.SuccessResponse{
 		Success: true,
