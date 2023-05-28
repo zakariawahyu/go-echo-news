@@ -12,3 +12,9 @@ func NewErrorStatusCodeMaps() map[error]int {
 	errorStatusCodeMaps[ErrDocumentNotFound] = http.StatusNotFound
 	return errorStatusCodeMaps
 }
+
+func PanicIfNeeded(err interface{}) {
+	if err != nil {
+		panic(err)
+	}
+}

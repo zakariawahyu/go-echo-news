@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
-	"log"
+	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 )
 
 type Config struct {
@@ -11,17 +11,12 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	// Tell viper the type of your file
 	viper.AddConfigPath("../")
-
 	viper.SetConfigName("app")
-	// Tell viper the type of your file
 	viper.SetConfigType("env")
 
-	// Viper reads all the variables from app.env file and log error if any found
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatal("Error reading app.env file", err)
-	}
+	err := viper.ReadInConfig()
+	exception.PanicIfNeeded(err)
 
 	return &Config{
 		DB:  LoadDBConfig(),

@@ -11,3 +11,11 @@ type ErrorResponse struct {
 	Code    int         `json:"code"`
 	Errors  interface{} `json:"errors"`
 }
+
+func NewSuccessResponse(code int, data interface{}) *SuccessResponse {
+	return &SuccessResponse{
+		Success: true,
+		Code:    code,
+		Data:    data,
+	}
+}

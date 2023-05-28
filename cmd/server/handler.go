@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/zakariawahyu/go-echo-news/config"
 	"github.com/zakariawahyu/go-echo-news/modules/content/controller"
-	"github.com/zakariawahyu/go-echo-news/utils/exception"
+	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"log"
 	"net/http"
 )
@@ -21,12 +21,13 @@ func NewAppHandler(e *echo.Echo) {
 		})
 	})
 }
+
 func NewHandler(cfg *config.Config, serv *Services) {
 	e := echo.New()
 
 	e.HTTPErrorHandler = exception.NewHttpErrorHandler(exception.NewErrorStatusCodeMaps()).Handler
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
-		StackSize: 1 << 10, // 1 KB
+		StackSize: 1 << 10,
 	}))
 
 	v1 := e.Group("/v1")

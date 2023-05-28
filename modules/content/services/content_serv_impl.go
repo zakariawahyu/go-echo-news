@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/content/repository"
+	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"time"
 )
 
@@ -24,8 +25,7 @@ func (serv *ContentServicesImpl) GetBySlug(c context.Context, slug string) entit
 	defer cancel()
 
 	res, err := serv.contentRepo.GetBySlug(ctx, slug)
-	if err != nil {
-		panic(err)
-	}
+	exception.PanicIfNeeded(err)
+
 	return entity.NewContentResponse(res)
 }
