@@ -2,6 +2,7 @@ package entity
 
 import (
 	"github.com/uptrace/bun"
+	"reflect"
 	"time"
 )
 
@@ -112,4 +113,18 @@ func NewContentResponse(content Content) ContentResponse {
 		PublishedDate: content.PublishedDate,
 		UpdatedAt:     content.UpdatedAt,
 	}
+}
+
+func (c *Content) IsEmpty() bool {
+	return reflect.DeepEqual(c, Content{})
+}
+
+func (c *Content) TagNameArray() []string {
+	var tags []string
+
+	for _, tag := range c.Tags {
+		tags = append(tags, tag.Name)
+	}
+
+	return tags
 }

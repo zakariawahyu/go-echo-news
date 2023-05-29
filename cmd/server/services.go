@@ -11,6 +11,6 @@ type Services struct {
 
 func NewServices(repo *Repository, timeoutContext time.Duration) *Services {
 	return &Services{
-		contentServices: _contentServices.NewContentServices(repo.ContentRepo, timeoutContext),
+		contentServices: _contentServices.NewContentServices(repo.contentRepo, repo.recommendedRepo, timeoutContext),
 	}
 }

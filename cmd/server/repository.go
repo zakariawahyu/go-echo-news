@@ -1,16 +1,19 @@
 package server
 
 import (
-	"github.com/zakariawahyu/go-echo-news/config"
 	_contentRepository "github.com/zakariawahyu/go-echo-news/modules/content/repository"
+	_recommendedRepository "github.com/zakariawahyu/go-echo-news/modules/recommended/repository"
+	"github.com/zakariawahyu/go-echo-news/pkg"
 )
 
 type Repository struct {
-	ContentRepo _contentRepository.ContentRepository
+	contentRepo     _contentRepository.ContentRepository
+	recommendedRepo _recommendedRepository.RecommendedRepository
 }
 
-func NewRepository(conn *config.Conn) *Repository {
+func NewRepository(conn *pkg.Conn) *Repository {
 	return &Repository{
-		ContentRepo: _contentRepository.NewContentRepository(conn.Mysql),
+		contentRepo:     _contentRepository.NewContentRepository(conn.Mysql),
+		recommendedRepo: _recommendedRepository.NewRecommendedRepository(conn.Mysql),
 	}
 }

@@ -1,4 +1,4 @@
-package config
+package pkg
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
 	"github.com/uptrace/bun/extra/bundebug"
+	"github.com/zakariawahyu/go-echo-news/config"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"time"
@@ -15,13 +16,13 @@ type Conn struct {
 	Mysql *bun.DB
 }
 
-func NewDbConnection(cfg *Config) *Conn {
+func NewDbConnection(cfg *config.Config) *Conn {
 	return &Conn{
 		Mysql: InitMysql(cfg),
 	}
 }
 
-func InitMysql(cfg *Config) *bun.DB {
+func InitMysql(cfg *config.Config) *bun.DB {
 	sqldb, err := sql.Open("mysql", cfg.DB.DSN)
 	exception.PanicIfNeeded(err)
 
