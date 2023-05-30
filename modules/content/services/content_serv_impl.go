@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"github.com/GRbit/go-pcre"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/content/repository"
 	repository2 "github.com/zakariawahyu/go-echo-news/modules/recommended/repository"
@@ -24,11 +25,21 @@ func NewContentServices(repoContent repository.ContentRepository, repoRecommende
 	}
 }
 
-func (serv *ContentServicesImpl) GetBySlug(c context.Context, slug string) entity.ContentResponse {
+func (serv *ContentServicesImpl) GetContent(c context.Context, slug string) entity.ContentResponse {
+	content := entity.Content{}
+	var err error
 	ctx, cancel := context.WithTimeout(c, serv.contextTimeout)
 	defer cancel()
 
-	content, err := serv.contentRepo.GetBySlug(ctx, slug)
+	regex := pcre.MustCompile(`^[0-9]+$`, 0)
+	numericSlug := regex.MatchString(slug, 0)
+
+	if numericSlug {
+		content, err = serv.contentRepo.GetByID(ctx, slug)
+	} else {
+		content, err = serv.contentRepo.GetBySlug(ctx, slug)
+	}
+
 	exception.PanicIfNeeded(err)
 
 	if !content.IsEmpty() {
@@ -36,11 +47,12 @@ func (serv *ContentServicesImpl) GetBySlug(c context.Context, slug string) entit
 		exception.PanicIfNeeded(err)
 
 		tagName := content.TagNameArray()
+
 		if recommended[0].IsEmpty() {
-			content.Content = helpers.AutoLinkedTags(tagName, content.Content, content.TypeID)
-		} else {
-			content.Content = helpers.AutoLinkedTags(tagName, content.Content, content.TypeID)
+
 		}
+
+		content.Content = helpers.AutoLinkedTags(tagName, content.Content, content.TypeID)
 	}
 
 	return entity.NewContentResponse(content)

@@ -7,4 +7,5 @@ import (
 
 type ContentRepository interface {
 	GetBySlug(ctx context.Context, slug string) (entity.Content, error)
+	GetByID(ctx context.Context, slug string) (entity.Content, error)
 }

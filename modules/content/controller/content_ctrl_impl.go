@@ -16,15 +16,15 @@ func NewContentController(e *echo.Group, serv services.ContentServices) {
 		contentServices: serv,
 	}
 
-	e.GET("/read/:slug", content.GetBySlug)
+	e.GET("/read/:slug", content.Read)
 }
 
-func (ctrl *ContentController) GetBySlug(c echo.Context) error {
+func (ctrl *ContentController) Read(c echo.Context) error {
 	slug := c.Param("slug")
 
 	ctx := c.Request().Context()
 
-	content := ctrl.contentServices.GetBySlug(ctx, slug)
+	content := ctrl.contentServices.GetContent(ctx, slug)
 
 	return c.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, content))
 }
