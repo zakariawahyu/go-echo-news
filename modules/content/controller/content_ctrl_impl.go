@@ -11,12 +11,10 @@ type ContentController struct {
 	contentServices services.ContentServices
 }
 
-func NewContentController(e *echo.Group, serv services.ContentServices) {
-	content := &ContentController{
+func NewContentController(serv services.ContentServices) ContentController {
+	return ContentController{
 		contentServices: serv,
 	}
-
-	e.GET("/read/:slug", content.Read)
 }
 
 func (ctrl *ContentController) Read(c echo.Context) error {

@@ -29,11 +29,12 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		StackSize: 1 << 10,
 	}))
+	NewAppHandler(e)
 
 	v1 := e.Group("/v1")
+	contentCtrl := controller.NewContentController(serv.contentServices)
 
-	NewAppHandler(e)
-	controller.NewContentController(v1, serv.contentServices)
+	v1.GET("/read/:slug", contentCtrl.Read)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

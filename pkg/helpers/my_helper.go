@@ -33,10 +33,10 @@ func AutoLinkedTags(tags []string, content string, typeID *int64) string {
 		}
 	}
 
-	return preg_replace(content, findTag, replaceTag)
+	return PregReplace(content, findTag, replaceTag)
 }
 
-func preg_replace(str string, original []string, replacement []string) string {
+func PregReplace(str string, original []string, replacement []string) string {
 
 	for i, toreplace := range original {
 		regex := pcre.MustCompile(toreplace, 0)
