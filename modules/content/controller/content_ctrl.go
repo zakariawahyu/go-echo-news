@@ -11,9 +11,9 @@ type ContentController struct {
 	contentServices services.ContentServices
 }
 
-func NewContentController(serv services.ContentServices) ContentController {
+func NewContentController(contentServices services.ContentServices) ContentController {
 	return ContentController{
-		contentServices: serv,
+		contentServices: contentServices,
 	}
 }
 

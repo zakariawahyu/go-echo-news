@@ -5,7 +5,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 	"github.com/zakariawahyu/go-echo-news/config"
-	"github.com/zakariawahyu/go-echo-news/modules/content/controller"
+	_ctrChannel "github.com/zakariawahyu/go-echo-news/modules/channel/controller"
+	_ctrContent "github.com/zakariawahyu/go-echo-news/modules/content/controller"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"log"
 	"net/http"
@@ -32,9 +33,13 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	NewAppHandler(e)
 
 	v1 := e.Group("/v1")
-	contentCtrl := controller.NewContentController(serv.contentServices)
+	contentCtrl := _ctrContent.NewContentController(serv.contentServices)
+	channelCtrl := _ctrChannel.NewChannelController(serv.channelServices)
 
 	v1.GET("/read/:slug", contentCtrl.Read)
+
+	v1.GET("/channel", channelCtrl.AllChannel)
+	v1.GET("/channel/:slug", channelCtrl.GetChannel)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

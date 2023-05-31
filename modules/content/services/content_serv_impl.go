@@ -16,10 +16,10 @@ type ContentServicesImpl struct {
 	contextTimeout  time.Duration
 }
 
-func NewContentServices(repoContent repository.ContentRepository, repoRecommended repository2.RecommendedRepository, timeout time.Duration) ContentServices {
+func NewContentServices(contentRepo repository.ContentRepository, recommendedRepo repository2.RecommendedRepository, timeout time.Duration) ContentServices {
 	return &ContentServicesImpl{
-		contentRepo:     repoContent,
-		recommendedRepo: repoRecommended,
+		contentRepo:     contentRepo,
+		recommendedRepo: recommendedRepo,
 		contextTimeout:  timeout,
 	}
 }
