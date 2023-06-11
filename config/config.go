@@ -6,8 +6,9 @@ import (
 )
 
 type Config struct {
-	DB  DBConfig
-	App AppConfig
+	DB    DBConfig
+	Cache CacheConfig
+	App   AppConfig
 }
 
 func NewConfig() *Config {
@@ -19,7 +20,8 @@ func NewConfig() *Config {
 	exception.PanicIfNeeded(err)
 
 	return &Config{
-		DB:  LoadDBConfig(),
-		App: LoadAppConfig(),
+		DB:    LoadDBConfig(),
+		Cache: LoadCacheConfig(),
+		App:   LoadAppConfig(),
 	}
 }

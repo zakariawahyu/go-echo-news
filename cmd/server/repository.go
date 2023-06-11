@@ -8,15 +8,17 @@ import (
 )
 
 type Repository struct {
-	contentRepo     _contentRepository.ContentRepository
-	recommendedRepo _recommendedRepository.RecommendedRepository
-	channelRepo     _channelRepository.ChannelRepository
+	contentRepo      _contentRepository.ContentRepository
+	contentRedisRepo _contentRepository.ContentRedisRepository
+	recommendedRepo  _recommendedRepository.RecommendedRepository
+	channelRepo      _channelRepository.ChannelRepository
 }
 
 func NewRepository(DB *pkg.Conn) *Repository {
 	return &Repository{
-		contentRepo:     _contentRepository.NewContentRepository(DB.Mysql),
-		recommendedRepo: _recommendedRepository.NewRecommendedRepository(DB.Mysql),
-		channelRepo:     _channelRepository.NewChannelRepository(DB.Mysql),
+		contentRepo:      _contentRepository.NewContentRepository(DB.Mysql),
+		contentRedisRepo: _contentRepository.NewContentRedisRepository(DB.Redis),
+		recommendedRepo:  _recommendedRepository.NewRecommendedRepository(DB.Mysql),
+		channelRepo:      _channelRepository.NewChannelRepository(DB.Mysql),
 	}
 }
