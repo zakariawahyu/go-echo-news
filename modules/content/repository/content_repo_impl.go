@@ -15,12 +15,12 @@ func NewContentRepository(DB *bun.DB) ContentRepository {
 	return &ContentRepositoryImpl{DB}
 }
 
-func (repo *ContentRepositoryImpl) GetContent(ctx context.Context, slug string) (entity.Content, error) {
-	content := entity.Content{}
+func (repo *ContentRepositoryImpl) GetContent(ctx context.Context, slug string) (*entity.Content, error) {
+	content := &entity.Content{}
 
-	err := repo.DB.NewSelect().Model(&content).Relation("User").Relation("Region").Relation("Channel").Relation("SubChannel").Relation("Tags").Relation("Topics").Relation("Reporters").Relation("SubPhotos").Where("content.slug = ?", slug).WhereOr("content.id = ?", slug).Scan(ctx)
+	err := repo.DB.NewSelect().Model(content).Relation("User").Relation("Region").Relation("Channel").Relation("SubChannel").Relation("Tags").Relation("Topics").Relation("Reporters").Relation("SubPhotos").Where("content.slug = ?", slug).WhereOr("content.id = ?", slug).Scan(ctx)
 	if err != nil {
-		return content, helpers.ErrNotFound
+		return nil, helpers.ErrNotFound
 	}
 
 	return content, nil

@@ -82,7 +82,7 @@ type ContentResponse struct {
 	UpdatedAt     bun.NullTime            `bun:"modified" json:"updated_at"`
 }
 
-func NewContentResponse(content Content) ContentResponse {
+func NewContentResponse(content *Content) ContentResponse {
 	return ContentResponse{
 		ID:            content.ID,
 		Type:          content.Type,

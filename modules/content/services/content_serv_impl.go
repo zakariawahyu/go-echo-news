@@ -30,10 +30,10 @@ func (serv *ContentServicesImpl) GetContent(c context.Context, slug string) enti
 	ctx, cancel := context.WithTimeout(c, serv.contextTimeout)
 	defer cancel()
 
-	newBase, err := serv.redisRepo.GetContent(ctx, "test")
+	newBase, err := serv.redisRepo.GetContent(ctx, helpers.KeyRedis("read", slug))
 
 	if newBase != nil {
-		return entity.NewContentResponse(*newBase)
+		return entity.NewContentResponse(newBase)
 	}
 
 	content, err := serv.contentRepo.GetContent(ctx, slug)
@@ -52,7 +52,7 @@ func (serv *ContentServicesImpl) GetContent(c context.Context, slug string) enti
 		content.Content = helpers.AutoLinkedTags(tagName, content.Content, content.TypeID)
 	}
 
-	err = serv.redisRepo.SetContent(ctx, "test", 10, content)
+	err = serv.redisRepo.SetContent(ctx, helpers.KeyRedis("read", slug), helpers.Faster, content)
 	exception.PanicIfNeeded(err)
 
 	return entity.NewContentResponse(content)
