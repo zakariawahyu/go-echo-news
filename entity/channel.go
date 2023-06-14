@@ -43,7 +43,7 @@ type ChannelResponse struct {
 	SubChannels   []*SubChannelResponse `bun:"rel:has-many,join:id=channel_id" json:"sub_channels"`
 }
 
-func NewChannelResponse(channel Channel) ChannelResponse {
+func NewChannelResponse(channel *Channel) ChannelResponse {
 	return ChannelResponse{
 		ID:          channel.ID,
 		Name:        channel.Name,

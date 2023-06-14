@@ -27,10 +27,10 @@ func (repo *ChannelRepositoryImpl) GetAllChannel(ctx context.Context) ([]entity.
 	return channel, nil
 }
 
-func (repo *ChannelRepositoryImpl) GetChannel(ctx context.Context, slug string) (entity.Channel, error) {
-	channel := entity.Channel{}
+func (repo *ChannelRepositoryImpl) GetChannel(ctx context.Context, slug string) (*entity.Channel, error) {
+	channel := &entity.Channel{}
 
-	err := repo.DB.NewSelect().Model(&channel).Relation("Suplemens").Relation("SubChannels").Where("channel.slug = ?", slug).WhereOr("channel.id = ?", slug).Scan(ctx)
+	err := repo.DB.NewSelect().Model(channel).Relation("Suplemens").Relation("SubChannels").Where("channel.slug = ?", slug).WhereOr("channel.id = ?", slug).Scan(ctx)
 	if err != nil {
 		return channel, err
 	}

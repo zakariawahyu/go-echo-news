@@ -19,13 +19,13 @@ func NewContentRedisRepository(Redis *redis.Client) ContentRedisRepository {
 }
 
 func (repo *ContentRedisRepositoryImpl) GetContent(ctx context.Context, key string) (*entity.Content, error) {
-	newsBytes, err := repo.Redis.Get(ctx, key).Bytes()
+	contentBytes, err := repo.Redis.Get(ctx, key).Bytes()
 	if err != nil {
 		return nil, err
 	}
 
 	content := &entity.Content{}
-	if err = json.Unmarshal(newsBytes, content); err != nil {
+	if err = json.Unmarshal(contentBytes, content); err != nil {
 		return nil, err
 	}
 
