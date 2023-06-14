@@ -1,15 +1,28 @@
 package repository
 
 import (
+	"context"
+	"github.com/uptrace/bun"
 	"github.com/zakariawahyu/go-echo-news/entity"
-	"golang.org/x/net/context"
+	"github.com/zakariawahyu/go-echo-news/modules/content"
+	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
 )
 
-type ContentRepository interface {
-	GetContent(ctx context.Context, slug string) (*entity.Content, error)
+type contentRepository struct {
+	DB *bun.DB
 }
 
-type ContentRedisRepository interface {
-	GetContent(ctx context.Context, key string) (*entity.Content, error)
-	SetContent(ctx context.Context, key string, ttl int, content *entity.Content) error
+func NewContentRepository(DB *bun.DB) content.ContentRepository {
+	return &contentRepository{DB}
+}
+
+func (repo *contentRepository) GetContent(ctx context.Context, slug string) (*entity.Content, error) {
+	content := &entity.Content{}
+
+	err := repo.DB.NewSelect().Model(content).Relation("User").Relation("Region").Relation("Channel").Relation("SubChannel").Relation("Tags").Relation("Topics").Relation("Reporters").Relation("SubPhotos").Where("content.slug = ?", slug).WhereOr("content.id = ?", slug).Scan(ctx)
+	if err != nil {
+		return nil, helpers.ErrNotFound
+	}
+
+	return content, nil
 }

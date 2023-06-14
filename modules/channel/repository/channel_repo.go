@@ -2,15 +2,39 @@ package repository
 
 import (
 	"context"
+	"github.com/uptrace/bun"
 	"github.com/zakariawahyu/go-echo-news/entity"
+	"github.com/zakariawahyu/go-echo-news/modules/channel"
 )
 
-type ChannelRepository interface {
-	GetAllChannel(ctx context.Context) ([]entity.Channel, error)
-	GetChannel(ctx context.Context, slug string) (*entity.Channel, error)
+type channelRepository struct {
+	DB *bun.DB
 }
 
-type ChannelRedisRepository interface {
-	GetChannel(ctx context.Context, key string) (*entity.Channel, error)
-	SetChannel(ctx context.Context, key string, ttl int, channel *entity.Channel) error
+func NewChannelRepository(DB *bun.DB) channel.ChannelRepository {
+	return &channelRepository{
+		DB: DB,
+	}
+}
+
+func (repo *channelRepository) GetAllChannel(ctx context.Context) ([]entity.Channel, error) {
+	channel := []entity.Channel{}
+
+	err := repo.DB.NewSelect().Model(&channel).Relation("Suplemens").Relation("SubChannels").Scan(ctx)
+	if err != nil {
+		return channel, err
+	}
+
+	return channel, nil
+}
+
+func (repo *channelRepository) GetChannel(ctx context.Context, slug string) (*entity.Channel, error) {
+	channel := &entity.Channel{}
+
+	err := repo.DB.NewSelect().Model(channel).Relation("Suplemens").Relation("SubChannels").Where("channel.slug = ?", slug).WhereOr("channel.id = ?", slug).Scan(ctx)
+	if err != nil {
+		return channel, err
+	}
+
+	return channel, nil
 }

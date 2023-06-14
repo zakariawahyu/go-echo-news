@@ -5,20 +5,21 @@ import (
 	"encoding/json"
 	"github.com/redis/go-redis/v9"
 	"github.com/zakariawahyu/go-echo-news/entity"
+	"github.com/zakariawahyu/go-echo-news/modules/content"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
 )
 
-type ContentRedisRepositoryImpl struct {
+type contentRedisRepository struct {
 	Redis *redis.Client
 }
 
-func NewContentRedisRepository(Redis *redis.Client) ContentRedisRepository {
-	return &ContentRedisRepositoryImpl{
+func NewContentRedisRepository(Redis *redis.Client) content.ContentRedisRepository {
+	return &contentRedisRepository{
 		Redis: Redis,
 	}
 }
 
-func (repo *ContentRedisRepositoryImpl) GetContent(ctx context.Context, key string) (*entity.Content, error) {
+func (repo *contentRedisRepository) GetContent(ctx context.Context, key string) (*entity.Content, error) {
 	contentBytes, err := repo.Redis.Get(ctx, key).Bytes()
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func (repo *ContentRedisRepositoryImpl) GetContent(ctx context.Context, key stri
 	return content, nil
 }
 
-func (repo *ContentRedisRepositoryImpl) SetContent(ctx context.Context, key string, ttl int, content *entity.Content) error {
+func (repo *contentRedisRepository) SetContent(ctx context.Context, key string, ttl int, content *entity.Content) error {
 	contentBytes, err := json.Marshal(&content)
 	if err != nil {
 		return err

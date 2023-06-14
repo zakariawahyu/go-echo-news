@@ -1,14 +1,16 @@
 package server
 
 import (
+	"github.com/zakariawahyu/go-echo-news/modules/channel"
 	_channelServices "github.com/zakariawahyu/go-echo-news/modules/channel/services"
+	"github.com/zakariawahyu/go-echo-news/modules/content"
 	_contentServices "github.com/zakariawahyu/go-echo-news/modules/content/services"
 	"time"
 )
 
 type Services struct {
-	contentServices _contentServices.ContentServices
-	channelServices _channelServices.ChannelServices
+	contentServices content.ContentServices
+	channelServices channel.ChannelServices
 }
 
 func NewServices(repo *Repository, timeoutContext time.Duration) *Services {

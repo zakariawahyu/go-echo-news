@@ -2,27 +2,27 @@ package controller
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/zakariawahyu/go-echo-news/modules/content/services"
+	"github.com/zakariawahyu/go-echo-news/modules/content"
 	"github.com/zakariawahyu/go-echo-news/pkg/response"
 	"net/http"
 )
 
 type ContentController struct {
-	contentServices services.ContentServices
+	contentServices content.ContentServices
 }
 
-func NewContentController(contentServices services.ContentServices) ContentController {
+func NewContentController(contentServices content.ContentServices) ContentController {
 	return ContentController{
 		contentServices: contentServices,
 	}
 }
 
-func (ctrl *ContentController) Read(c echo.Context) error {
-	slug := c.Param("slug")
+func (ctrl *ContentController) Read(ctx echo.Context) error {
+	slug := ctx.Param("slug")
 
-	ctx := c.Request().Context()
+	c := ctx.Request().Context()
 
-	content := ctrl.contentServices.GetContent(ctx, slug)
+	content := ctrl.contentServices.GetContent(c, slug)
 
-	return c.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, content))
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, content))
 }
