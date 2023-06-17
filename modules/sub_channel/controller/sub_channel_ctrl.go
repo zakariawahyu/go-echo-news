@@ -20,9 +20,9 @@ func NewSubChannelController(subChannelServices sub_channel.SubChannelServices) 
 func (ctrl *SubChannelController) AllSubChannel(ctx echo.Context) error {
 	c := ctx.Request().Context()
 
-	subChannel := ctrl.subChannelServices.GetAllSubChannel(c)
+	subChannels := ctrl.subChannelServices.GetAllSubChannel(c)
 
-	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, subChannel))
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, subChannels))
 }
 
 func (ctrl *SubChannelController) SubChannelBySlugOrId(ctx echo.Context) error {

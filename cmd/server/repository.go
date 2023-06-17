@@ -7,6 +7,8 @@ import (
 	_contentRepository "github.com/zakariawahyu/go-echo-news/modules/content/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/recommended"
 	_recommendedRepository "github.com/zakariawahyu/go-echo-news/modules/recommended/repository"
+	"github.com/zakariawahyu/go-echo-news/modules/region"
+	_regionRepo "github.com/zakariawahyu/go-echo-news/modules/region/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
 	_subChannelRepository "github.com/zakariawahyu/go-echo-news/modules/sub_channel/repository"
 	"github.com/zakariawahyu/go-echo-news/pkg/db"
@@ -19,6 +21,7 @@ type Repository struct {
 	channelRepo      channel.ChannelRepository
 	channelRedisRepo channel.ChannelRedisRepository
 	subChannelRepo   sub_channel.SubChannelRepository
+	regionRepo       region.RegionRepository
 }
 
 func NewRepository(DB *db.Conn) *Repository {
@@ -29,5 +32,6 @@ func NewRepository(DB *db.Conn) *Repository {
 		channelRepo:      _channelRepository.NewChannelRepository(DB.Mysql),
 		channelRedisRepo: _channelRepository.NewChannelRedisRepository(DB.Redis),
 		subChannelRepo:   _subChannelRepository.NewSubChannelRepository(DB.Mysql),
+		regionRepo:       _regionRepo.NewRegionRepository(DB.Mysql),
 	}
 }

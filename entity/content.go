@@ -38,7 +38,7 @@ type Content struct {
 	LocationSuburb   string                  `json:"location_suburb"`
 	CreatedBy        int64                   `json:"created_by"`
 	User             *UserResponse           `bun:"rel:has-one,join:created_by=id" json:"user"`
-	Region           *RegionResponse         `bun:"rel:has-one,join:type_id=id" json:"region"`
+	Region           *ContentRegionResponse  `bun:"rel:has-one,join:type_id=id" json:"region"`
 	Channel          *ContentChannelResponse `bun:"rel:has-one,join:type_id=id" json:"channel"`
 	SubChannel       *SubChannelResponse     `bun:"rel:has-one,join:type_child_id=id" json:"sub_channel"`
 	Tags             []Tag                   `bun:"m2m:content_has_tags,join:Content=Tag" json:"tags"`
@@ -71,7 +71,7 @@ type ContentResponse struct {
 	IsComment     bool                    `json:"is_comment"`
 	CreatedBy     int64                   `json:"created_by"`
 	User          *UserResponse           `bun:"rel:has-one,join:created_by=id" json:"user"`
-	Region        *RegionResponse         `bun:"rel:has-one,join:type_id=id" json:"region"`
+	Region        *ContentRegionResponse  `bun:"rel:has-one,join:type_id=id" json:"region"`
 	Channel       *ContentChannelResponse `bun:"rel:has-one,join:type_id=id" json:"channel"`
 	SubChannel    *SubChannelResponse     `bun:"rel:has-one,join:type_child_id=id" json:"sub_channel"`
 	Tags          []Tag                   `bun:"m2m:content_has_tags,join:Content=Tag" json:"tags"`

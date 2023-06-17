@@ -7,6 +7,7 @@ import (
 	"github.com/zakariawahyu/go-echo-news/config"
 	_channelController "github.com/zakariawahyu/go-echo-news/modules/channel/controller"
 	_contentController "github.com/zakariawahyu/go-echo-news/modules/content/controller"
+	_regionController "github.com/zakariawahyu/go-echo-news/modules/region/controller"
 	_subChannelController "github.com/zakariawahyu/go-echo-news/modules/sub_channel/controller"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"log"
@@ -36,6 +37,7 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	contentCtrl := _contentController.NewContentController(serv.contentServices)
 	channelCtrl := _channelController.NewChannelController(serv.channelServices)
 	subChannelCtrl := _subChannelController.NewSubChannelController(serv.subChannelServices)
+	regionCtrl := _regionController.NewRegionController(serv.regionServices)
 
 	v1 := e.Group("/v1")
 
@@ -46,6 +48,9 @@ func NewHandler(cfg *config.Config, serv *Services) {
 
 	v1.GET("/sub-channel", subChannelCtrl.AllSubChannel)
 	v1.GET("/sub-channel/:slug", subChannelCtrl.SubChannelBySlugOrId)
+
+	v1.GET("/region", regionCtrl.AllRegion)
+	v1.GET("/region/:slug", regionCtrl.RegionBySlugOrId)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
