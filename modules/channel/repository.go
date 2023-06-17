@@ -8,6 +8,7 @@ import (
 type ChannelRepository interface {
 	GetAll(ctx context.Context) ([]entity.Channel, error)
 	GetBySlugOrId(ctx context.Context, slug string) (*entity.Channel, error)
+	GetMetas(ctx context.Context, slug string) (interface{}, error)
 }
 
 type ChannelRedisRepository interface {

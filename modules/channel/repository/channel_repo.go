@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/labstack/echo/v4"
 	"github.com/uptrace/bun"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/channel"
@@ -35,4 +36,19 @@ func (repo *channelRepository) GetBySlugOrId(ctx context.Context, slug string) (
 	}
 
 	return channel, nil
+}
+
+func (repo *channelRepository) GetMetas(ctx context.Context, slug string) (interface{}, error) {
+	channel := &entity.Channel{}
+
+	if err := repo.DB.NewSelect().Model(channel).ColumnExpr("title, description").Where("slug = ?", slug).Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	data := echo.Map{
+		"title":       channel.Title,
+		"description": channel.Description,
+	}
+
+	return data, nil
 }
