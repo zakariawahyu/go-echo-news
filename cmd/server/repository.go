@@ -3,6 +3,8 @@ package server
 import (
 	"github.com/zakariawahyu/go-echo-news/modules/channel"
 	_channelRepository "github.com/zakariawahyu/go-echo-news/modules/channel/repository"
+	"github.com/zakariawahyu/go-echo-news/modules/config"
+	_configRepo "github.com/zakariawahyu/go-echo-news/modules/config/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
 	_contentRepository "github.com/zakariawahyu/go-echo-news/modules/content/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/recommended_content"
@@ -22,6 +24,7 @@ type Repository struct {
 	channelRedisRepo       channel.ChannelRedisRepository
 	subChannelRepo         sub_channel.SubChannelRepository
 	regionRepo             region.RegionRepository
+	configRepo             config.ConfigRepository
 }
 
 func NewRepository(DB *db.Conn) *Repository {
@@ -33,5 +36,6 @@ func NewRepository(DB *db.Conn) *Repository {
 		channelRedisRepo:       _channelRepository.NewChannelRedisRepository(DB.Redis),
 		subChannelRepo:         _subChannelRepository.NewSubChannelRepository(DB.Mysql),
 		regionRepo:             _regionRepo.NewRegionRepository(DB.Mysql),
+		configRepo:             _configRepo.NewConfigRepository(DB.Mysql),
 	}
 }

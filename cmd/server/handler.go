@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/zakariawahyu/go-echo-news/config"
 	_channelController "github.com/zakariawahyu/go-echo-news/modules/channel/controller"
+	"github.com/zakariawahyu/go-echo-news/modules/config/controller"
 	_contentController "github.com/zakariawahyu/go-echo-news/modules/content/controller"
 	_regionController "github.com/zakariawahyu/go-echo-news/modules/region/controller"
 	_subChannelController "github.com/zakariawahyu/go-echo-news/modules/sub_channel/controller"
@@ -34,23 +35,29 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	}))
 	NewAppHandler(e)
 
-	contentCtrl := _contentController.NewContentController(serv.contentServices)
-	channelCtrl := _channelController.NewChannelController(serv.channelServices)
-	subChannelCtrl := _subChannelController.NewSubChannelController(serv.subChannelServices)
-	regionCtrl := _regionController.NewRegionController(serv.regionServices)
+	contentController := _contentController.NewContentController(serv.contentServices)
+	channelController := _channelController.NewChannelController(serv.channelServices)
+	subChannelController := _subChannelController.NewSubChannelController(serv.subChannelServices)
+	regionController := _regionController.NewRegionController(serv.regionServices)
+	configController := controller.NewConfigController(serv.configServices)
 
 	v1 := e.Group("/v1")
+	v2 := e.Group("/v2")
 
-	v1.GET("/read/:slug", contentCtrl.Read)
+	v1.GET("/read/:slug", contentController.Read)
 
-	v1.GET("/channel", channelCtrl.AllChannel)
-	v1.GET("/channel/:slug", channelCtrl.ChannelBySlugOrId)
+	v1.GET("/channel", channelController.AllChannel)
+	v1.GET("/channel/:slug", channelController.ChannelBySlugOrId)
 
-	v1.GET("/sub-channel", subChannelCtrl.AllSubChannel)
-	v1.GET("/sub-channel/:slug", subChannelCtrl.SubChannelBySlugOrId)
+	v1.GET("/sub-channel", subChannelController.AllSubChannel)
+	v1.GET("/sub-channel/:slug", subChannelController.SubChannelBySlugOrId)
 
-	v1.GET("/region", regionCtrl.AllRegion)
-	v1.GET("/region/:slug", regionCtrl.RegionBySlugOrId)
+	v1.GET("/region", regionController.AllRegion)
+	v1.GET("/region/:slug", regionController.RegionBySlugOrId)
+
+	// Replica API iNews.id
+	v2.GET("/config", configController.AllConfig)
+	v2.GET("/meta/:type/:key", configController.Metas)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
