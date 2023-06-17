@@ -5,8 +5,8 @@ import (
 	_channelRepository "github.com/zakariawahyu/go-echo-news/modules/channel/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
 	_contentRepository "github.com/zakariawahyu/go-echo-news/modules/content/repository"
-	"github.com/zakariawahyu/go-echo-news/modules/recommended"
-	_recommendedRepository "github.com/zakariawahyu/go-echo-news/modules/recommended/repository"
+	"github.com/zakariawahyu/go-echo-news/modules/recommended_content"
+	_recommendedContentRepository "github.com/zakariawahyu/go-echo-news/modules/recommended_content/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/region"
 	_regionRepo "github.com/zakariawahyu/go-echo-news/modules/region/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
@@ -15,23 +15,23 @@ import (
 )
 
 type Repository struct {
-	contentRepo      content.ContentRepository
-	contentRedisRepo content.ContentRedisRepository
-	recommendedRepo  recommended.RecommendedRepository
-	channelRepo      channel.ChannelRepository
-	channelRedisRepo channel.ChannelRedisRepository
-	subChannelRepo   sub_channel.SubChannelRepository
-	regionRepo       region.RegionRepository
+	contentRepo            content.ContentRepository
+	contentRedisRepo       content.ContentRedisRepository
+	recommendedContentRepo recommended_content.RecommendedContentRepository
+	channelRepo            channel.ChannelRepository
+	channelRedisRepo       channel.ChannelRedisRepository
+	subChannelRepo         sub_channel.SubChannelRepository
+	regionRepo             region.RegionRepository
 }
 
 func NewRepository(DB *db.Conn) *Repository {
 	return &Repository{
-		contentRepo:      _contentRepository.NewContentRepository(DB.Mysql),
-		contentRedisRepo: _contentRepository.NewContentRedisRepository(DB.Redis),
-		recommendedRepo:  _recommendedRepository.NewRecommendedRepository(DB.Mysql),
-		channelRepo:      _channelRepository.NewChannelRepository(DB.Mysql),
-		channelRedisRepo: _channelRepository.NewChannelRedisRepository(DB.Redis),
-		subChannelRepo:   _subChannelRepository.NewSubChannelRepository(DB.Mysql),
-		regionRepo:       _regionRepo.NewRegionRepository(DB.Mysql),
+		contentRepo:            _contentRepository.NewContentRepository(DB.Mysql),
+		contentRedisRepo:       _contentRepository.NewContentRedisRepository(DB.Redis),
+		recommendedContentRepo: _recommendedContentRepository.NewRecommendedContentRepository(DB.Mysql),
+		channelRepo:            _channelRepository.NewChannelRepository(DB.Mysql),
+		channelRedisRepo:       _channelRepository.NewChannelRedisRepository(DB.Redis),
+		subChannelRepo:         _subChannelRepository.NewSubChannelRepository(DB.Mysql),
+		regionRepo:             _regionRepo.NewRegionRepository(DB.Mysql),
 	}
 }

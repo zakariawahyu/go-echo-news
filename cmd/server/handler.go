@@ -44,7 +44,7 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	v1.GET("/read/:slug", contentCtrl.Read)
 
 	v1.GET("/channel", channelCtrl.AllChannel)
-	v1.GET("/channel/:slug", channelCtrl.GetChannel)
+	v1.GET("/channel/:slug", channelCtrl.ChannelBySlugOrId)
 
 	v1.GET("/sub-channel", subChannelCtrl.AllSubChannel)
 	v1.GET("/sub-channel/:slug", subChannelCtrl.SubChannelBySlugOrId)

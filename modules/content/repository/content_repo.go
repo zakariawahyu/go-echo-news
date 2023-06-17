@@ -5,7 +5,6 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
-	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
 )
 
 type contentRepository struct {
@@ -16,12 +15,11 @@ func NewContentRepository(DB *bun.DB) content.ContentRepository {
 	return &contentRepository{DB}
 }
 
-func (repo *contentRepository) GetContent(ctx context.Context, slug string) (*entity.Content, error) {
+func (repo *contentRepository) GetBySlugOrId(ctx context.Context, slug string) (*entity.Content, error) {
 	content := &entity.Content{}
 
-	err := repo.DB.NewSelect().Model(content).Relation("User").Relation("Region").Relation("Channel").Relation("SubChannel").Relation("Tags").Relation("Topics").Relation("Reporters").Relation("SubPhotos").Where("content.slug = ?", slug).WhereOr("content.id = ?", slug).Scan(ctx)
-	if err != nil {
-		return nil, helpers.ErrNotFound
+	if err := repo.DB.NewSelect().Model(content).Relation("User").Relation("Region").Relation("Channel").Relation("SubChannel").Relation("Tags").Relation("Topics").Relation("Reporters").Relation("SubPhotos").Where("content.slug = ?", slug).WhereOr("content.id = ?", slug).Scan(ctx); err != nil {
+		return nil, err
 	}
 
 	return content, nil

@@ -6,7 +6,7 @@ import (
 )
 
 type ContentRepository interface {
-	GetContent(ctx context.Context, slug string) (*entity.Content, error)
+	GetBySlugOrId(ctx context.Context, slug string) (*entity.Content, error)
 }
 
 type ContentRedisRepository interface {

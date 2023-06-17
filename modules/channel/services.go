@@ -7,5 +7,5 @@ import (
 
 type ChannelServices interface {
 	GetAllChannel(ctx context.Context) (channels []entity.ChannelResponse)
-	GetChannel(ctx context.Context, slug string) entity.ChannelResponse
+	GetChannelBySlugOrId(ctx context.Context, slug string) entity.ChannelResponse
 }

@@ -6,5 +6,5 @@ import (
 )
 
 type ContentServices interface {
-	GetContent(ctx context.Context, slug string) entity.ContentResponse
+	GetContentBySlugOrId(ctx context.Context, slug string) entity.ContentResponse
 }

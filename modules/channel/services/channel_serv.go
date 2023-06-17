@@ -28,7 +28,7 @@ func (serv *channelServices) GetAllChannel(ctx context.Context) (channels []enti
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
-	res, err := serv.channelRepo.GetAllChannel(c)
+	res, err := serv.channelRepo.GetAll(c)
 	exception.PanicIfNeeded(err)
 
 	for _, channel := range res {
@@ -38,7 +38,7 @@ func (serv *channelServices) GetAllChannel(ctx context.Context) (channels []enti
 	return channels
 }
 
-func (serv *channelServices) GetChannel(ctx context.Context, slug string) entity.ChannelResponse {
+func (serv *channelServices) GetChannelBySlugOrId(ctx context.Context, slug string) entity.ChannelResponse {
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
@@ -47,7 +47,7 @@ func (serv *channelServices) GetChannel(ctx context.Context, slug string) entity
 		return entity.NewChannelResponse(newBase)
 	}
 
-	channel, err := serv.channelRepo.GetChannel(c, slug)
+	channel, err := serv.channelRepo.GetBySlugOrId(c, slug)
 	exception.PanicIfNeeded(err)
 
 	err = serv.redisRepo.SetChannel(c, helpers.KeyRedis(fmt.Sprintf("channel-%s", slug), ""), helpers.Slowly, channel)

@@ -20,17 +20,17 @@ func NewChannelController(channelServices channel.ChannelServices) ChannelContro
 func (ctrl *ChannelController) AllChannel(ctx echo.Context) error {
 	c := ctx.Request().Context()
 
-	channel := ctrl.channelServices.GetAllChannel(c)
+	channels := ctrl.channelServices.GetAllChannel(c)
 
-	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, channel))
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, channels))
 }
 
-func (ctrl *ChannelController) GetChannel(ctx echo.Context) error {
+func (ctrl *ChannelController) ChannelBySlugOrId(ctx echo.Context) error {
 	slug := ctx.Param("slug")
 
 	c := ctx.Request().Context()
 
-	channel := ctrl.channelServices.GetChannel(c, slug)
+	channel := ctrl.channelServices.GetChannelBySlugOrId(c, slug)
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, channel))
 }

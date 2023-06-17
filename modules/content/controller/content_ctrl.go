@@ -22,7 +22,7 @@ func (ctrl *ContentController) Read(ctx echo.Context) error {
 
 	c := ctx.Request().Context()
 
-	content := ctrl.contentServices.GetContent(c, slug)
+	content := ctrl.contentServices.GetContentBySlugOrId(c, slug)
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, content))
 }
