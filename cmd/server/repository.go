@@ -7,6 +7,8 @@ import (
 	_configRepo "github.com/zakariawahyu/go-echo-news/modules/config/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
 	_contentRepository "github.com/zakariawahyu/go-echo-news/modules/content/repository"
+	"github.com/zakariawahyu/go-echo-news/modules/item"
+	_itemRepo "github.com/zakariawahyu/go-echo-news/modules/item/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/recommended_content"
 	_recommendedContentRepository "github.com/zakariawahyu/go-echo-news/modules/recommended_content/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/region"
@@ -25,6 +27,7 @@ type Repository struct {
 	subChannelRepo         sub_channel.SubChannelRepository
 	regionRepo             region.RegionRepository
 	configRepo             config.ConfigRepository
+	itemRepo               item.ItemRepository
 }
 
 func NewRepository(DB *db.Conn) *Repository {
@@ -37,5 +40,6 @@ func NewRepository(DB *db.Conn) *Repository {
 		subChannelRepo:         _subChannelRepository.NewSubChannelRepository(DB.Mysql),
 		regionRepo:             _regionRepo.NewRegionRepository(DB.Mysql),
 		configRepo:             _configRepo.NewConfigRepository(DB.Mysql),
+		itemRepo:               _itemRepo.NewItemRepository(DB.Mysql),
 	}
 }

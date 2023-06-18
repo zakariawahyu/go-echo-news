@@ -7,6 +7,8 @@ import (
 	_configServices "github.com/zakariawahyu/go-echo-news/modules/config/services"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
 	_contentServices "github.com/zakariawahyu/go-echo-news/modules/content/services"
+	"github.com/zakariawahyu/go-echo-news/modules/item"
+	_itemServices "github.com/zakariawahyu/go-echo-news/modules/item/services"
 	"github.com/zakariawahyu/go-echo-news/modules/region"
 	_regionServices "github.com/zakariawahyu/go-echo-news/modules/region/services"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
@@ -20,6 +22,7 @@ type Services struct {
 	subChannelServices sub_channel.SubChannelServices
 	regionServices     region.RegionServices
 	configServices     config.ConfigServices
+	itemServices       item.ItemServices
 }
 
 func NewServices(repo *Repository, timeoutContext time.Duration) *Services {
@@ -29,5 +32,6 @@ func NewServices(repo *Repository, timeoutContext time.Duration) *Services {
 		subChannelServices: _subChannelServices.NewSubChannelServices(repo.subChannelRepo, timeoutContext),
 		regionServices:     _regionServices.NewRegionServices(repo.regionRepo, timeoutContext),
 		configServices:     _configServices.NewConfigServices(repo.configRepo, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, timeoutContext),
+		itemServices:       _itemServices.NewItemServices(repo.itemRepo, timeoutContext),
 	}
 }

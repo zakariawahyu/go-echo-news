@@ -6,8 +6,9 @@ import (
 	"github.com/spf13/viper"
 	"github.com/zakariawahyu/go-echo-news/config"
 	_channelController "github.com/zakariawahyu/go-echo-news/modules/channel/controller"
-	"github.com/zakariawahyu/go-echo-news/modules/config/controller"
+	_configController "github.com/zakariawahyu/go-echo-news/modules/config/controller"
 	_contentController "github.com/zakariawahyu/go-echo-news/modules/content/controller"
+	_itemController "github.com/zakariawahyu/go-echo-news/modules/item/controller"
 	_regionController "github.com/zakariawahyu/go-echo-news/modules/region/controller"
 	_subChannelController "github.com/zakariawahyu/go-echo-news/modules/sub_channel/controller"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
@@ -39,7 +40,8 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	channelController := _channelController.NewChannelController(serv.channelServices)
 	subChannelController := _subChannelController.NewSubChannelController(serv.subChannelServices)
 	regionController := _regionController.NewRegionController(serv.regionServices)
-	configController := controller.NewConfigController(serv.configServices)
+	configController := _configController.NewConfigController(serv.configServices)
+	itemController := _itemController.NewItemController(serv.itemServices)
 
 	v1 := e.Group("/v1")
 	v2 := e.Group("/v2")
@@ -58,6 +60,7 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	// Replica API iNews.id
 	v2.GET("/config", configController.AllConfig)
 	v2.GET("/meta/:type/:key", configController.Metas)
+	v2.GET("/item/:type", itemController.ItemByType)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

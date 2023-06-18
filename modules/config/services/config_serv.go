@@ -9,6 +9,7 @@ import (
 	"github.com/zakariawahyu/go-echo-news/modules/region"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
+	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
 	"time"
 )
 
@@ -56,10 +57,15 @@ func (serv *configServices) GetMetas(ctx context.Context, types string, key stri
 		exception.PanicIfNeeded(err)
 	} else if types == "subchannel" {
 		data, err = serv.subChannelRepo.GetMetas(c, key)
+		exception.PanicIfNeeded(err)
 	} else if types == "region" {
 		data, err = serv.regionRepository.GetMetas(c, key)
+		exception.PanicIfNeeded(err)
 	} else {
 		data = OtherMeta(key)
+		if data == nil {
+			exception.PanicIfNeeded(helpers.ErrNotFound)
+		}
 	}
 
 	return data
