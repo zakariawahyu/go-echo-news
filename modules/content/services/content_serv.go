@@ -56,3 +56,17 @@ func (serv *contentServices) GetContentBySlugOrId(ctx context.Context, slug stri
 
 	return entity.NewContentResponse(content)
 }
+
+func (serv *contentServices) GetContentAllHome(ctx context.Context, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	res, err := serv.contentRepo.GetAllHome(c, limit, offset)
+	exception.PanicIfNeeded(err)
+
+	for _, content := range *res {
+		contents = append(contents, content)
+	}
+
+	return contents
+}

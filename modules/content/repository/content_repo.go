@@ -18,7 +18,41 @@ func NewContentRepository(DB *bun.DB) content.ContentRepository {
 func (repo *contentRepository) GetBySlugOrId(ctx context.Context, slug string) (*entity.Content, error) {
 	content := &entity.Content{}
 
-	if err := repo.DB.NewSelect().Model(content).Relation("User").Relation("Region").Relation("Channel").Relation("SubChannel").Relation("Tags").Relation("Topics").Relation("Reporters").Relation("SubPhotos").Where("content.slug = ?", slug).WhereOr("content.id = ?", slug).Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(content).
+		Relation("User").
+		Relation("Region").
+		Relation("Channel").
+		Relation("SubChannel").
+		Relation("Tags").
+		Relation("Topics").
+		Relation("Reporters").
+		Relation("SubPhotos").
+		Where("content.slug = ?", slug).
+		WhereOr("content.id = ?", slug).
+		Where("content.is_active", true).
+		Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}
+
+func (repo *contentRepository) GetAllHome(ctx context.Context, limit int, offset int) (*[]entity.ContentRowResponse, error) {
+	content := &[]entity.ContentRowResponse{}
+
+	if err := repo.DB.NewSelect().Model(content).
+		Relation("Region").
+		Relation("Channel").
+		Relation("SubChannel").
+		Relation("SubPhotos").
+		Relation("Tags").
+		Where("content_row_response.is_active = ?", true).
+		Where("headline_type != ?", 1).
+		Where("is_national = ?", true).
+		Order("published_date desc").
+		Limit(limit).
+		Offset(offset).
+		Scan(ctx); err != nil {
 		return nil, err
 	}
 

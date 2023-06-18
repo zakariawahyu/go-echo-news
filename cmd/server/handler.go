@@ -66,5 +66,7 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	v2.GET("/live_stream", scheduleController.AllLiveStream)
 	v2.GET("/live_stream/:key", scheduleController.LiveStreamBySpecificKey)
 
+	v2.GET("/news-row", contentController.NewsRowHome)
+
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

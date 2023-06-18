@@ -7,6 +7,7 @@ import (
 
 type ContentRepository interface {
 	GetBySlugOrId(ctx context.Context, slug string) (*entity.Content, error)
+	GetAllHome(ctx context.Context, limit int, offset int) (*[]entity.ContentRowResponse, error)
 }
 
 type ContentRedisRepository interface {
