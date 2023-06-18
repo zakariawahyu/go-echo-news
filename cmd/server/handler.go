@@ -10,6 +10,7 @@ import (
 	_contentController "github.com/zakariawahyu/go-echo-news/modules/content/controller"
 	_itemController "github.com/zakariawahyu/go-echo-news/modules/item/controller"
 	_regionController "github.com/zakariawahyu/go-echo-news/modules/region/controller"
+	_scheduleController "github.com/zakariawahyu/go-echo-news/modules/schedule/controller"
 	_subChannelController "github.com/zakariawahyu/go-echo-news/modules/sub_channel/controller"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"log"
@@ -42,6 +43,7 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	regionController := _regionController.NewRegionController(serv.regionServices)
 	configController := _configController.NewConfigController(serv.configServices)
 	itemController := _itemController.NewItemController(serv.itemServices)
+	scheduleController := _scheduleController.NewScheduleController(serv.scheduleServices)
 
 	v1 := e.Group("/v1")
 	v2 := e.Group("/v2")
@@ -61,6 +63,8 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	v2.GET("/config", configController.AllConfig)
 	v2.GET("/meta/:type/:key", configController.Metas)
 	v2.GET("/item/:type", itemController.ItemByType)
+	v2.GET("/live_stream", scheduleController.AllLiveStream)
+	v2.GET("/live_stream/:key", scheduleController.LiveStreamBySpecificKey)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

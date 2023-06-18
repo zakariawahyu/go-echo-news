@@ -13,6 +13,8 @@ import (
 	_recommendedContentRepository "github.com/zakariawahyu/go-echo-news/modules/recommended_content/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/region"
 	_regionRepo "github.com/zakariawahyu/go-echo-news/modules/region/repository"
+	"github.com/zakariawahyu/go-echo-news/modules/schedule"
+	_scheduleRepo "github.com/zakariawahyu/go-echo-news/modules/schedule/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
 	_subChannelRepository "github.com/zakariawahyu/go-echo-news/modules/sub_channel/repository"
 	"github.com/zakariawahyu/go-echo-news/pkg/db"
@@ -28,6 +30,7 @@ type Repository struct {
 	regionRepo             region.RegionRepository
 	configRepo             config.ConfigRepository
 	itemRepo               item.ItemRepository
+	scheduleRepo           schedule.ScheduleRepository
 }
 
 func NewRepository(DB *db.Conn) *Repository {
@@ -41,5 +44,6 @@ func NewRepository(DB *db.Conn) *Repository {
 		regionRepo:             _regionRepo.NewRegionRepository(DB.Mysql),
 		configRepo:             _configRepo.NewConfigRepository(DB.Mysql),
 		itemRepo:               _itemRepo.NewItemRepository(DB.Mysql),
+		scheduleRepo:           _scheduleRepo.NewScheduleRepository(DB.Mysql),
 	}
 }
