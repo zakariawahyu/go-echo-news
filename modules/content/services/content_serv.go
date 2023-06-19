@@ -6,6 +6,7 @@ import (
 	"github.com/zakariawahyu/go-echo-news/modules/channel"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
 	"github.com/zakariawahyu/go-echo-news/modules/recommended_content"
+	"github.com/zakariawahyu/go-echo-news/modules/region"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
@@ -18,16 +19,18 @@ type contentServices struct {
 	recommendedContentRepo recommended_content.RecommendedContentRepository
 	channelRepo            channel.ChannelRepository
 	subChannelRepo         sub_channel.SubChannelRepository
+	regionRepo             region.RegionRepository
 	contextTimeout         time.Duration
 }
 
-func NewContentServices(contentRepo content.ContentRepository, redisRepo content.ContentRedisRepository, recommendedContentRepo recommended_content.RecommendedContentRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, timeout time.Duration) content.ContentServices {
+func NewContentServices(contentRepo content.ContentRepository, redisRepo content.ContentRedisRepository, recommendedContentRepo recommended_content.RecommendedContentRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, timeout time.Duration) content.ContentServices {
 	return &contentServices{
 		contentRepo:            contentRepo,
 		redisRepo:              redisRepo,
 		recommendedContentRepo: recommendedContentRepo,
 		channelRepo:            channelRepo,
 		subChannelRepo:         subChannelRepo,
+		regionRepo:             regionRepo,
 		contextTimeout:         timeout,
 	}
 }
@@ -71,7 +74,7 @@ func (serv *contentServices) GetContentAllHome(ctx context.Context, limit int, o
 	exception.PanicIfNeeded(err)
 
 	for _, content := range *res {
-		contents = append(contents, content)
+		contents = append(contents, entity.NewContentRowResponse(&content))
 	}
 
 	return contents
@@ -88,7 +91,7 @@ func (serv *contentServices) GetContentAllChannel(ctx context.Context, key strin
 	exception.PanicIfNeeded(err)
 
 	for _, content := range *res {
-		contents = append(contents, content)
+		contents = append(contents, entity.NewContentRowResponse(&content))
 	}
 
 	return contents
@@ -105,7 +108,24 @@ func (serv *contentServices) GetContentAllSubChannel(ctx context.Context, key st
 	exception.PanicIfNeeded(err)
 
 	for _, content := range *res {
-		contents = append(contents, content)
+		contents = append(contents, entity.NewContentRowResponse(&content))
+	}
+
+	return contents
+}
+
+func (serv *contentServices) GetContentAllRegion(ctx context.Context, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	region, err := serv.regionRepo.GetBySlugOrId(c, key)
+	exception.PanicIfNeeded(err)
+
+	res, err := serv.contentRepo.GetAllRegion(c, region.ID, limit, offset)
+	exception.PanicIfNeeded(err)
+
+	for _, content := range *res {
+		contents = append(contents, entity.NewContentRowResponse(&content))
 	}
 
 	return contents

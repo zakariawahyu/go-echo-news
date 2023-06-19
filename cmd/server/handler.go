@@ -69,5 +69,7 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	v2.GET("/news-row", contentController.NewsRowHome)
 	v2.GET("/news-row/channel/:key", contentController.NewsRowChannel)
 	v2.GET("/news-row/subchannel/:key", contentController.NewsRowSubChannel)
+	v2.GET("/news-row/region/:key", contentController.NewsRowRegion)
+
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

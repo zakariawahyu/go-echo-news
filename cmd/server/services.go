@@ -30,7 +30,7 @@ type Services struct {
 
 func NewServices(repo *Repository, timeoutContext time.Duration) *Services {
 	return &Services{
-		contentServices:    _contentServices.NewContentServices(repo.contentRepo, repo.contentRedisRepo, repo.recommendedContentRepo, repo.channelRepo, repo.subChannelRepo, timeoutContext),
+		contentServices:    _contentServices.NewContentServices(repo.contentRepo, repo.contentRedisRepo, repo.recommendedContentRepo, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, timeoutContext),
 		channelServices:    _channelServices.NewChannelServices(repo.channelRepo, repo.channelRedisRepo, timeoutContext),
 		subChannelServices: _subChannelServices.NewSubChannelServices(repo.subChannelRepo, timeoutContext),
 		regionServices:     _regionServices.NewRegionServices(repo.regionRepo, timeoutContext),

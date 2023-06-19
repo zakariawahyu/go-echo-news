@@ -100,7 +100,6 @@ type ContentRowResponse struct {
 	Region        *ContentRegionResponse     `bun:"rel:has-one,join:type_id=id" json:"region"`
 	Channel       *ContentChannelResponse    `bun:"rel:has-one,join:type_id=id" json:"channel"`
 	SubChannel    *ContentSubChannelResponse `bun:"rel:has-one,join:type_child_id=id" json:"sub_channel"`
-	Tags          []Tag                      `bun:"m2m:content_has_tags,join:Content=Tag" json:"tags"`
 	SubPhotos     []*SubPhoto                `bun:"rel:has-many,join:id=content_id" json:"sub_photos"`
 	PublishedDate time.Time                  `json:"published_date"`
 }
@@ -138,7 +137,7 @@ func NewContentResponse(content *Content) ContentResponse {
 	}
 }
 
-func NewContentRowResponse(content *Content) ContentRowResponse {
+func NewContentRowResponse(content *ContentRowResponse) ContentRowResponse {
 	return ContentRowResponse{
 		ID:            content.ID,
 		Type:          content.Type,
@@ -155,7 +154,6 @@ func NewContentRowResponse(content *Content) ContentRowResponse {
 		Region:        content.Region,
 		Channel:       content.Channel,
 		SubChannel:    content.SubChannel,
-		Tags:          content.Tags,
 		SubPhotos:     content.SubPhotos,
 		PublishedDate: content.PublishedDate,
 	}

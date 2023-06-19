@@ -10,6 +10,7 @@ type ContentRepository interface {
 	GetAllHome(ctx context.Context, limit int, offset int) (*[]entity.ContentRowResponse, error)
 	GetAllChannel(ctx context.Context, type_id int64, limit int, offset int) (*[]entity.ContentRowResponse, error)
 	GetAllSubChannel(ctx context.Context, type_child_id int64, limit int, offset int) (*[]entity.ContentRowResponse, error)
+	GetAllRegion(ctx context.Context, type_id int64, limit int, offset int) (*[]entity.ContentRowResponse, error)
 }
 
 type ContentRedisRepository interface {
