@@ -64,3 +64,19 @@ func (ctrl *ContentController) NewsRowAdsAll(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
 }
+
+func (ctrl *ContentController) NewsRowLatestAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+	types := ctx.Param("type")
+	key := ctx.Param("key")
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &limit).
+		Int("offset", &offset).
+		BindError()
+	exception.PanicIfNeeded(err)
+
+	contents := ctrl.contentServices.GetContentAllLatest(c, types, key, limit, offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}

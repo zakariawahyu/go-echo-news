@@ -71,23 +71,25 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
-	if types == "channel" {
-		channel, err := serv.channelRepo.GetBySlugOrId(c, key)
-		exception.PanicIfNeeded(err)
+	if types != "" {
+		if types == "channel" {
+			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
+			exception.PanicIfNeeded(err)
 
-		key = strconv.FormatInt(channel.ID, 10)
-	} else if types == "region" {
-		region, err := serv.regionRepo.GetBySlugOrId(c, key)
-		exception.PanicIfNeeded(err)
+			key = strconv.FormatInt(channel.ID, 10)
+		} else if types == "region" {
+			region, err := serv.regionRepo.GetBySlugOrId(c, key)
+			exception.PanicIfNeeded(err)
 
-		key = strconv.FormatInt(region.ID, 10)
-	} else if types == "subchannel" {
-		subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
-		exception.PanicIfNeeded(err)
+			key = strconv.FormatInt(region.ID, 10)
+		} else if types == "subchannel" {
+			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
+			exception.PanicIfNeeded(err)
 
-		key = strconv.FormatInt(subChannel.ID, 10)
-	} else if types != "channel" || types != "subchannel" || types != "region" {
-		exception.PanicIfNeeded(helpers.ErrNotFound)
+			key = strconv.FormatInt(subChannel.ID, 10)
+		} else if types != "channel" || types != "subchannel" || types != "region" {
+			exception.PanicIfNeeded(helpers.ErrNotFound)
+		}
 	}
 
 	res, err := serv.contentRepo.GetAllRow(c, types, key, limit, offset)
@@ -126,6 +128,41 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 	}
 
 	res, err := serv.contentRepo.GetAllRowAds(c, types, key, limit, offset)
+	exception.PanicIfNeeded(err)
+
+	for _, content := range *res {
+		contents = append(contents, entity.NewContentRowResponse(&content))
+	}
+
+	return contents
+}
+
+func (serv *contentServices) GetContentAllLatest(ctx context.Context, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	if types != "" {
+		if types == "channel" {
+			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
+			exception.PanicIfNeeded(err)
+
+			key = strconv.FormatInt(channel.ID, 10)
+		} else if types == "region" {
+			region, err := serv.regionRepo.GetBySlugOrId(c, key)
+			exception.PanicIfNeeded(err)
+
+			key = strconv.FormatInt(region.ID, 10)
+		} else if types == "subchannel" {
+			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
+			exception.PanicIfNeeded(err)
+
+			key = strconv.FormatInt(subChannel.ID, 10)
+		} else if types != "channel" || types != "subchannel" || types != "region" {
+			exception.PanicIfNeeded(helpers.ErrNotFound)
+		}
+	}
+
+	res, err := serv.contentRepo.GetAllLatest(c, types, key, limit, offset)
 	exception.PanicIfNeeded(err)
 
 	for _, content := range *res {

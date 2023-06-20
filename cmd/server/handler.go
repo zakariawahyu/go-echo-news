@@ -71,5 +71,8 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	v2.GET("/news-row/ads", contentController.NewsRowAdsAll)
 	v2.GET("/news-row/ads/:type/:key", contentController.NewsRowAdsAll)
 
+	v2.GET("/latest", contentController.NewsRowLatestAll)
+	v2.GET("/latest/:type/:key", contentController.NewsRowLatestAll)
+
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
