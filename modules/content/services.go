@@ -11,4 +11,5 @@ type ContentServices interface {
 	GetContentAllChannel(ctx context.Context, key string, limit int, offset int) (contents []entity.ContentRowResponse)
 	GetContentAllSubChannel(ctx context.Context, key string, limit int, offset int) (contents []entity.ContentRowResponse)
 	GetContentAllRegion(ctx context.Context, key string, limit int, offset int) (contents []entity.ContentRowResponse)
+	GetContentAllAds(ctx context.Context, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse)
 }

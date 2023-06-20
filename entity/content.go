@@ -151,6 +151,7 @@ func NewContentRowResponse(content *ContentRowResponse) ContentRowResponse {
 		Caption:       content.Caption,
 		Image:         content.Image,
 		Thumbnail:     content.Thumbnail,
+		AdsPosition:   content.AdsPosition,
 		Region:        content.Region,
 		Channel:       content.Channel,
 		SubChannel:    content.SubChannel,

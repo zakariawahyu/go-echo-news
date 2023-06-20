@@ -5,6 +5,11 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
+	"time"
+)
+
+var (
+	currentTime = time.Now()
 )
 
 type contentRepository struct {
@@ -129,6 +134,47 @@ func (repo *contentRepository) GetAllRegion(ctx context.Context, type_id int64, 
 		Where("headline_type NOT IN (?)", bun.In([]int{1, 2})).
 		WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
 			return q.Where("ads_position is null").WhereOr("ads_position = 0")
+		}).
+		Order("published_date desc").
+		Limit(limit).
+		Offset(offset).
+		Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}
+
+func (repo *contentRepository) GetAllAds(ctx context.Context, types string, key string, limit int, offset int) (*[]entity.ContentRowResponse, error) {
+	content := &[]entity.ContentRowResponse{}
+
+	if err := repo.DB.NewSelect().Model(content).
+		Relation("Region").
+		Relation("Channel").
+		Relation("SubChannel").
+		Relation("SubPhotos").
+		Where("content_row_response.is_active = ?", true).
+		Where("content_row_response.headline_type != 1").
+		Where("ads_expired_date >= ?", currentTime.Format("2006-01-02 15:01:05")).
+		Where("ads_position between ? and ?", 1, 10).
+		Order("ads_position asc").
+		Apply(func(q *bun.SelectQuery) *bun.SelectQuery {
+			if types != "" {
+				if types == "channel" {
+					q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+						return q.Where("type_id = ?", key).Where("type_child_id is not null")
+					})
+				} else if types == "region" {
+					q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+						return q.Where("type_id = ?", key).Where("type_child_id is null")
+					})
+				} else if types == "subchannel" {
+					q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+						return q.Where("type_child_id = ?", key)
+					})
+				}
+			}
+			return q
 		}).
 		Order("published_date desc").
 		Limit(limit).

@@ -10,6 +10,7 @@ import (
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
+	"strconv"
 	"time"
 )
 
@@ -122,6 +123,39 @@ func (serv *contentServices) GetContentAllRegion(ctx context.Context, key string
 	exception.PanicIfNeeded(err)
 
 	res, err := serv.contentRepo.GetAllRegion(c, region.ID, limit, offset)
+	exception.PanicIfNeeded(err)
+
+	for _, content := range *res {
+		contents = append(contents, entity.NewContentRowResponse(&content))
+	}
+
+	return contents
+}
+
+func (serv *contentServices) GetContentAllAds(ctx context.Context, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	if types != "" {
+		if types == "channel" {
+			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
+			exception.PanicIfNeeded(err)
+
+			key = strconv.FormatInt(channel.ID, 10)
+		} else if types == "region" {
+			region, err := serv.regionRepo.GetBySlugOrId(c, key)
+			exception.PanicIfNeeded(err)
+
+			key = strconv.FormatInt(region.ID, 10)
+		} else if types == "subchannel" {
+			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
+			exception.PanicIfNeeded(err)
+
+			key = strconv.FormatInt(subChannel.ID, 10)
+		}
+	}
+
+	res, err := serv.contentRepo.GetAllAds(c, types, key, limit, offset)
 	exception.PanicIfNeeded(err)
 
 	for _, content := range *res {
