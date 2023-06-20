@@ -33,21 +33,9 @@ func (ctrl *ContentController) Read(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, content))
 }
 
-func (ctrl *ContentController) NewsRowHome(ctx echo.Context) error {
+func (ctrl *ContentController) NewsRowAll(ctx echo.Context) error {
 	c := ctx.Request().Context()
-	err := echo.QueryParamsBinder(ctx).
-		Int("limit", &limit).
-		Int("offset", &offset).
-		BindError()
-	exception.PanicIfNeeded(err)
-
-	contents := ctrl.contentServices.GetContentAllHome(c, limit, offset)
-
-	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
-}
-
-func (ctrl *ContentController) NewsRowChannel(ctx echo.Context) error {
-	c := ctx.Request().Context()
+	types := ctx.Param("type")
 	key := ctx.Param("key")
 
 	err := echo.QueryParamsBinder(ctx).
@@ -56,37 +44,7 @@ func (ctrl *ContentController) NewsRowChannel(ctx echo.Context) error {
 		BindError()
 	exception.PanicIfNeeded(err)
 
-	contents := ctrl.contentServices.GetContentAllChannel(c, key, limit, offset)
-
-	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
-}
-
-func (ctrl *ContentController) NewsRowSubChannel(ctx echo.Context) error {
-	c := ctx.Request().Context()
-	key := ctx.Param("key")
-
-	err := echo.QueryParamsBinder(ctx).
-		Int("limit", &limit).
-		Int("offset", &offset).
-		BindError()
-	exception.PanicIfNeeded(err)
-
-	contents := ctrl.contentServices.GetContentAllSubChannel(c, key, limit, offset)
-
-	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
-}
-
-func (ctrl *ContentController) NewsRowRegion(ctx echo.Context) error {
-	c := ctx.Request().Context()
-	key := ctx.Param("key")
-
-	err := echo.QueryParamsBinder(ctx).
-		Int("limit", &limit).
-		Int("offset", &offset).
-		BindError()
-	exception.PanicIfNeeded(err)
-
-	contents := ctrl.contentServices.GetContentAllRegion(c, key, limit, offset)
+	contents := ctrl.contentServices.GetContentAllRow(c, types, key, limit, offset)
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
 }
@@ -102,7 +60,7 @@ func (ctrl *ContentController) NewsRowAdsAll(ctx echo.Context) error {
 		BindError()
 	exception.PanicIfNeeded(err)
 
-	contents := ctrl.contentServices.GetContentAllAds(c, types, key, limit, offset)
+	contents := ctrl.contentServices.GetContentAllRowAds(c, types, key, limit, offset)
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
 }

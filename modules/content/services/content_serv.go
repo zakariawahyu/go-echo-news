@@ -67,11 +67,30 @@ func (serv *contentServices) GetContentBySlugOrId(ctx context.Context, slug stri
 	return entity.NewContentResponse(content)
 }
 
-func (serv *contentServices) GetContentAllHome(ctx context.Context, limit int, offset int) (contents []entity.ContentRowResponse) {
+func (serv *contentServices) GetContentAllRow(ctx context.Context, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
-	res, err := serv.contentRepo.GetAllHome(c, limit, offset)
+	if types == "channel" {
+		channel, err := serv.channelRepo.GetBySlugOrId(c, key)
+		exception.PanicIfNeeded(err)
+
+		key = strconv.FormatInt(channel.ID, 10)
+	} else if types == "region" {
+		region, err := serv.regionRepo.GetBySlugOrId(c, key)
+		exception.PanicIfNeeded(err)
+
+		key = strconv.FormatInt(region.ID, 10)
+	} else if types == "subchannel" {
+		subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
+		exception.PanicIfNeeded(err)
+
+		key = strconv.FormatInt(subChannel.ID, 10)
+	} else if types != "channel" || types != "subchannel" || types != "region" {
+		exception.PanicIfNeeded(helpers.ErrNotFound)
+	}
+
+	res, err := serv.contentRepo.GetAllRow(c, types, key, limit, offset)
 	exception.PanicIfNeeded(err)
 
 	for _, content := range *res {
@@ -81,58 +100,7 @@ func (serv *contentServices) GetContentAllHome(ctx context.Context, limit int, o
 	return contents
 }
 
-func (serv *contentServices) GetContentAllChannel(ctx context.Context, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
-	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
-	defer cancel()
-
-	channel, err := serv.channelRepo.GetBySlugOrId(c, key)
-	exception.PanicIfNeeded(err)
-
-	res, err := serv.contentRepo.GetAllChannel(c, channel.ID, limit, offset)
-	exception.PanicIfNeeded(err)
-
-	for _, content := range *res {
-		contents = append(contents, entity.NewContentRowResponse(&content))
-	}
-
-	return contents
-}
-
-func (serv *contentServices) GetContentAllSubChannel(ctx context.Context, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
-	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
-	defer cancel()
-
-	subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
-	exception.PanicIfNeeded(err)
-
-	res, err := serv.contentRepo.GetAllSubChannel(c, subChannel.ID, limit, offset)
-	exception.PanicIfNeeded(err)
-
-	for _, content := range *res {
-		contents = append(contents, entity.NewContentRowResponse(&content))
-	}
-
-	return contents
-}
-
-func (serv *contentServices) GetContentAllRegion(ctx context.Context, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
-	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
-	defer cancel()
-
-	region, err := serv.regionRepo.GetBySlugOrId(c, key)
-	exception.PanicIfNeeded(err)
-
-	res, err := serv.contentRepo.GetAllRegion(c, region.ID, limit, offset)
-	exception.PanicIfNeeded(err)
-
-	for _, content := range *res {
-		contents = append(contents, entity.NewContentRowResponse(&content))
-	}
-
-	return contents
-}
-
-func (serv *contentServices) GetContentAllAds(ctx context.Context, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
+func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
@@ -152,10 +120,12 @@ func (serv *contentServices) GetContentAllAds(ctx context.Context, types string,
 			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(subChannel.ID, 10)
+		} else if types != "channel" || types != "subchannel" || types != "region" {
+			exception.PanicIfNeeded(helpers.ErrNotFound)
 		}
 	}
 
-	res, err := serv.contentRepo.GetAllAds(c, types, key, limit, offset)
+	res, err := serv.contentRepo.GetAllRowAds(c, types, key, limit, offset)
 	exception.PanicIfNeeded(err)
 
 	for _, content := range *res {

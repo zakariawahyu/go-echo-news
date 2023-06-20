@@ -66,10 +66,8 @@ func NewHandler(cfg *config.Config, serv *Services) {
 	v2.GET("/live_stream", scheduleController.AllLiveStream)
 	v2.GET("/live_stream/:key", scheduleController.LiveStreamBySpecificKey)
 
-	v2.GET("/news-row", contentController.NewsRowHome)
-	v2.GET("/news-row/channel/:key", contentController.NewsRowChannel)
-	v2.GET("/news-row/subchannel/:key", contentController.NewsRowSubChannel)
-	v2.GET("/news-row/region/:key", contentController.NewsRowRegion)
+	v2.GET("/news-row", contentController.NewsRowAll)
+	v2.GET("/news-row/:type/:key", contentController.NewsRowAll)
 	v2.GET("/news-row/ads", contentController.NewsRowAdsAll)
 	v2.GET("/news-row/ads/:type/:key", contentController.NewsRowAdsAll)
 
