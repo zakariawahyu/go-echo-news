@@ -127,3 +127,48 @@ func (ctrl *ContentController) NewsRowLatestInfografisAll(ctx echo.Context) erro
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
 }
+
+func (ctrl *ContentController) NewsRowLatestVideoFeaturedAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	exception.PanicIfNeeded(err)
+
+	contents := ctrl.contentServices.GetContentAllLatestMultimedia(c, "video", true, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}
+
+func (ctrl *ContentController) NewsRowLatestPhotoFeaturedAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	exception.PanicIfNeeded(err)
+
+	contents := ctrl.contentServices.GetContentAllLatestMultimedia(c, "photo", true, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}
+
+func (ctrl *ContentController) NewsRowLatestInfografisFeaturedAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	exception.PanicIfNeeded(err)
+
+	contents := ctrl.contentServices.GetContentAllLatestMultimedia(c, "infografis", true, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}
