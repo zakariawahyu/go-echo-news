@@ -171,3 +171,17 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 
 	return contents
 }
+
+func (serv *contentServices) GetContentAllLatestMultimedia(ctx context.Context, types string, featured bool, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	res, err := serv.contentRepo.GetAllLatestMultimedia(c, types, featured, limit, offset)
+	exception.PanicIfNeeded(err)
+
+	for _, content := range *res {
+		contents = append(contents, entity.NewContentRowResponse(&content))
+	}
+
+	return contents
+}

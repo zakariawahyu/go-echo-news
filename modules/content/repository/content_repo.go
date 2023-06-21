@@ -188,3 +188,26 @@ func (repo *contentRepository) GetAllLatest(ctx context.Context, types string, k
 
 	return content, nil
 }
+
+func (repo *contentRepository) GetAllLatestMultimedia(ctx context.Context, types string, featured bool, limit int, offset int) (*[]entity.ContentRowResponse, error) {
+	content := &[]entity.ContentRowResponse{}
+
+	if err := repo.DB.NewSelect().Model(content).
+		Relation("Channel").Relation("SubChannel").Relation("Region").Relation("SubPhotos").
+		Where("content_row_response.is_active = ?", true).
+		Where("content_row_response.type = ?", types).
+		Apply(func(q *bun.SelectQuery) *bun.SelectQuery {
+			if featured {
+				q = q.Where("is_featured = ?", true)
+			}
+			return q
+		}).
+		Order("published_date desc").
+		Limit(limit).
+		Offset(offset).
+		Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}
