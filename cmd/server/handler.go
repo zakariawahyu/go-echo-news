@@ -35,7 +35,9 @@ func NewHandler(cfg *config.Config, serv *Services, logger logger.Logger) {
 
 	e.HTTPErrorHandler = exception.NewHttpErrorHandler(exception.NewErrorStatusCodeMaps()).Handler
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
-		StackSize: 1 << 10,
+		StackSize:         1 << 10, // 1 KB
+		DisablePrintStack: true,
+		DisableStackAll:   true,
 	}))
 
 	mw := _loggerMiddleware.NewMiddlewareLogger(cfg, logger)
