@@ -5,6 +5,7 @@ import (
 	"github.com/zakariawahyu/go-echo-news/config"
 	"github.com/zakariawahyu/go-echo-news/pkg/db"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
+	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 )
 
 func main() {
@@ -18,5 +19,8 @@ func main() {
 
 	repo := server.NewRepository(db)
 	serv := server.NewServices(repo, cfg.App.ContextTimeout)
-	server.NewHandler(cfg, serv)
+	appLogger := logger.NewApiLogger(cfg)
+	appLogger.InitLogger()
+
+	server.NewHandler(cfg, serv, appLogger)
 }

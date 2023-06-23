@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 	"github.com/zakariawahyu/go-echo-news/config"
+	_loggerMiddleware "github.com/zakariawahyu/go-echo-news/middleware"
 	_channelController "github.com/zakariawahyu/go-echo-news/modules/channel/controller"
 	_configController "github.com/zakariawahyu/go-echo-news/modules/config/controller"
 	_contentController "github.com/zakariawahyu/go-echo-news/modules/content/controller"
@@ -13,6 +14,7 @@ import (
 	_scheduleController "github.com/zakariawahyu/go-echo-news/modules/schedule/controller"
 	_subChannelController "github.com/zakariawahyu/go-echo-news/modules/sub_channel/controller"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
+	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"log"
 	"net/http"
 )
@@ -28,13 +30,17 @@ func NewAppHandler(e *echo.Echo) {
 	})
 }
 
-func NewHandler(cfg *config.Config, serv *Services) {
+func NewHandler(cfg *config.Config, serv *Services, logger logger.Logger) {
 	e := echo.New()
 
 	e.HTTPErrorHandler = exception.NewHttpErrorHandler(exception.NewErrorStatusCodeMaps()).Handler
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		StackSize: 1 << 10,
 	}))
+
+	mw := _loggerMiddleware.NewMiddlewareLogger(cfg, logger)
+	e.Use(mw.LoggerMiddleware)
+	e.Use(middleware.RequestID())
 	NewAppHandler(e)
 
 	contentController := _contentController.NewContentController(serv.contentServices)
