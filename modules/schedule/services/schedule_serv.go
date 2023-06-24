@@ -27,8 +27,8 @@ func (serv *scheduleServices) GetAllSchedule(ctx context.Context) interface{} {
 	res, err := serv.scheduleRepo.GetAll(c)
 	exception.PanicIfNeeded(err)
 
-	collections := make(map[string][]entity.Schedule)
-	for _, b := range *res {
+	collections := make(map[string][]*entity.Schedule)
+	for _, b := range res {
 		collections[b.SpecificKey] = append(collections[b.SpecificKey], b)
 	}
 

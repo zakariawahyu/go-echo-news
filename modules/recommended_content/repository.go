@@ -6,5 +6,5 @@ import (
 )
 
 type RecommendedContentRepository interface {
-	GetByContentID(ctx context.Context, contentID int64) ([]entity.RecommendedContent, error)
+	GetByContentID(ctx context.Context, contentID int64) ([]*entity.RecommendedContent, error)
 }

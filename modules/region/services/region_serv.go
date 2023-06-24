@@ -27,8 +27,8 @@ func (serv *regionServices) GetAllRegion(ctx context.Context) (regions []entity.
 	res, err := serv.regionRepo.GetAll(c)
 	exception.PanicIfNeeded(err)
 
-	for _, region := range *res {
-		regions = append(regions, entity.NewRegionResponse(&region))
+	for _, region := range res {
+		regions = append(regions, entity.NewRegionResponse(region))
 	}
 
 	return regions

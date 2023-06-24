@@ -42,10 +42,10 @@ func (repo *contentRepository) GetBySlugOrId(ctx context.Context, slug string) (
 	return content, nil
 }
 
-func (repo *contentRepository) GetAllRow(ctx context.Context, types string, key string, limit int, offset int) (*[]entity.ContentRowResponse, error) {
-	content := &[]entity.ContentRowResponse{}
+func (repo *contentRepository) GetAllRow(ctx context.Context, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error) {
+	content := []*entity.ContentRowResponse{}
 
-	if err := repo.DB.NewSelect().Model(content).
+	if err := repo.DB.NewSelect().Model(&content).
 		Where("content_row_response.is_active = ?", true).
 		Apply(func(q *bun.SelectQuery) *bun.SelectQuery { //Relation Function
 			if types == "channel" || types == "subchannel" {
@@ -93,10 +93,10 @@ func (repo *contentRepository) GetAllRow(ctx context.Context, types string, key 
 	return content, nil
 }
 
-func (repo *contentRepository) GetAllRowAds(ctx context.Context, types string, key string, limit int, offset int) (*[]entity.ContentRowResponse, error) {
-	content := &[]entity.ContentRowResponse{}
+func (repo *contentRepository) GetAllRowAds(ctx context.Context, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error) {
+	content := []*entity.ContentRowResponse{}
 
-	if err := repo.DB.NewSelect().Model(content).
+	if err := repo.DB.NewSelect().Model(&content).
 		Relation("Region").
 		Relation("Channel").
 		Relation("SubChannel").
@@ -134,10 +134,10 @@ func (repo *contentRepository) GetAllRowAds(ctx context.Context, types string, k
 	return content, nil
 }
 
-func (repo *contentRepository) GetAllLatest(ctx context.Context, types string, key string, limit int, offset int) (*[]entity.ContentRowResponse, error) {
-	content := &[]entity.ContentRowResponse{}
+func (repo *contentRepository) GetAllLatest(ctx context.Context, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error) {
+	content := []*entity.ContentRowResponse{}
 
-	if err := repo.DB.NewSelect().Model(content).
+	if err := repo.DB.NewSelect().Model(&content).
 		Where("content_row_response.is_active = ?", true).
 		Apply(func(q *bun.SelectQuery) *bun.SelectQuery { //Relation Function
 			if types == "channel" || types == "subchannel" {
@@ -189,10 +189,10 @@ func (repo *contentRepository) GetAllLatest(ctx context.Context, types string, k
 	return content, nil
 }
 
-func (repo *contentRepository) GetAllLatestMultimedia(ctx context.Context, types string, featured bool, limit int, offset int) (*[]entity.ContentRowResponse, error) {
-	content := &[]entity.ContentRowResponse{}
+func (repo *contentRepository) GetAllLatestMultimedia(ctx context.Context, types string, featured bool, limit int, offset int) ([]*entity.ContentRowResponse, error) {
+	content := []*entity.ContentRowResponse{}
 
-	if err := repo.DB.NewSelect().Model(content).
+	if err := repo.DB.NewSelect().Model(&content).
 		Relation("Channel").Relation("SubChannel").Relation("Region").Relation("SubPhotos").
 		Where("content_row_response.is_active = ?", true).
 		Where("content_row_response.type = ?", types).

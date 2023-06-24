@@ -17,10 +17,10 @@ func NewScheduleRepository(DB *bun.DB) schedule.ScheduleRepository {
 	}
 }
 
-func (repo *scheduleRepository) GetAll(ctx context.Context) (*[]entity.Schedule, error) {
-	schedule := &[]entity.Schedule{}
+func (repo *scheduleRepository) GetAll(ctx context.Context) ([]*entity.Schedule, error) {
+	schedule := []*entity.Schedule{}
 
-	if err := repo.DB.NewSelect().Model(schedule).Group("specific_key").Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(&schedule).Group("specific_key").Scan(ctx); err != nil {
 		return nil, err
 	}
 

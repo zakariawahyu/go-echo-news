@@ -38,8 +38,8 @@ func (serv *configServices) GetAllConfig(ctx context.Context) (configs []entity.
 	res, err := serv.configRepo.GetAll(c)
 	exception.PanicIfNeeded(err)
 
-	for _, config := range *res {
-		configs = append(configs, entity.NewConfigResponse(&config))
+	for _, config := range res {
+		configs = append(configs, entity.NewConfigResponse(config))
 	}
 
 	return configs

@@ -6,5 +6,5 @@ import (
 )
 
 type ConfigRepository interface {
-	GetAll(ctx context.Context) (*[]entity.Config, error)
+	GetAll(ctx context.Context) ([]*entity.Config, error)
 }

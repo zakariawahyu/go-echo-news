@@ -17,10 +17,10 @@ func NewConfigRepository(DB *bun.DB) config.ConfigRepository {
 	}
 }
 
-func (repo *configRepository) GetAll(ctx context.Context) (*[]entity.Config, error) {
-	config := &[]entity.Config{}
+func (repo *configRepository) GetAll(ctx context.Context) ([]*entity.Config, error) {
+	config := []*entity.Config{}
 
-	if err := repo.DB.NewSelect().Model(config).Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(&config).Scan(ctx); err != nil {
 		return nil, err
 	}
 

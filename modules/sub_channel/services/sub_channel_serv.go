@@ -27,8 +27,8 @@ func (serv *subChannelServices) GetAllSubChannel(ctx context.Context) (subChanne
 	res, err := serv.subChannelRepo.GetAll(c)
 	exception.PanicIfNeeded(err)
 
-	for _, subChannel := range *res {
-		subChannels = append(subChannels, entity.NewSubChannelResponse(&subChannel))
+	for _, subChannel := range res {
+		subChannels = append(subChannels, entity.NewSubChannelResponse(subChannel))
 	}
 
 	return subChannels

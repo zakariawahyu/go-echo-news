@@ -17,10 +17,10 @@ func NewSubChannelRepository(DB *bun.DB) sub_channel.SubChannelRepository {
 		DB: DB,
 	}
 }
-func (repo *subChannelRepository) GetAll(ctx context.Context) (*[]entity.SubChannel, error) {
-	subChannel := &[]entity.SubChannel{}
+func (repo *subChannelRepository) GetAll(ctx context.Context) ([]*entity.SubChannel, error) {
+	subChannel := []*entity.SubChannel{}
 
-	if err := repo.DB.NewSelect().Model(subChannel).Relation("Channel").Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(&subChannel).Relation("Channel").Scan(ctx); err != nil {
 		return nil, err
 	}
 

@@ -17,10 +17,10 @@ func NewItemRepository(DB *bun.DB) item.ItemRepository {
 	}
 }
 
-func (repo *itemRepository) GetByType(ctx context.Context, types string) (*[]entity.Item, error) {
-	item := &[]entity.Item{}
+func (repo *itemRepository) GetByType(ctx context.Context, types string) ([]*entity.Item, error) {
+	item := []*entity.Item{}
 
-	if err := repo.DB.NewSelect().Model(item).Where("type = ?", types).Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(&item).Where("type = ?", types).Scan(ctx); err != nil {
 		return nil, err
 	}
 

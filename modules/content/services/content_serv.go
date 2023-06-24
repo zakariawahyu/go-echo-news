@@ -95,8 +95,8 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 	res, err := serv.contentRepo.GetAllRow(c, types, key, limit, offset)
 	exception.PanicIfNeeded(err)
 
-	for _, content := range *res {
-		contents = append(contents, entity.NewContentRowResponse(&content))
+	for _, content := range res {
+		contents = append(contents, entity.NewContentRowResponse(content))
 	}
 
 	return contents
@@ -130,8 +130,8 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 	res, err := serv.contentRepo.GetAllRowAds(c, types, key, limit, offset)
 	exception.PanicIfNeeded(err)
 
-	for _, content := range *res {
-		contents = append(contents, entity.NewContentRowResponse(&content))
+	for _, content := range res {
+		contents = append(contents, entity.NewContentRowResponse(content))
 	}
 
 	return contents
@@ -165,8 +165,8 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 	res, err := serv.contentRepo.GetAllLatest(c, types, key, limit, offset)
 	exception.PanicIfNeeded(err)
 
-	for _, content := range *res {
-		contents = append(contents, entity.NewContentRowResponse(&content))
+	for _, content := range res {
+		contents = append(contents, entity.NewContentRowResponse(content))
 	}
 
 	return contents
@@ -179,8 +179,8 @@ func (serv *contentServices) GetContentAllLatestMultimedia(ctx context.Context, 
 	res, err := serv.contentRepo.GetAllLatestMultimedia(c, types, featured, limit, offset)
 	exception.PanicIfNeeded(err)
 
-	for _, content := range *res {
-		contents = append(contents, entity.NewContentRowResponse(&content))
+	for _, content := range res {
+		contents = append(contents, entity.NewContentRowResponse(content))
 	}
 
 	return contents

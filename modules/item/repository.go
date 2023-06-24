@@ -6,5 +6,5 @@ import (
 )
 
 type ItemRepository interface {
-	GetByType(ctx context.Context, types string) (*[]entity.Item, error)
+	GetByType(ctx context.Context, types string) ([]*entity.Item, error)
 }

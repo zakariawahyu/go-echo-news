@@ -18,8 +18,8 @@ func NewChannelRepository(DB *bun.DB) channel.ChannelRepository {
 	}
 }
 
-func (repo *channelRepository) GetAll(ctx context.Context) ([]entity.Channel, error) {
-	channel := []entity.Channel{}
+func (repo *channelRepository) GetAll(ctx context.Context) ([]*entity.Channel, error) {
+	channel := []*entity.Channel{}
 
 	if err := repo.DB.NewSelect().Model(&channel).Relation("Suplemens").Relation("SubChannels").Scan(ctx); err != nil {
 		return nil, err

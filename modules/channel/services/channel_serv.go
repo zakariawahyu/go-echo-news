@@ -32,7 +32,7 @@ func (serv *channelServices) GetAllChannel(ctx context.Context) (channels []enti
 	exception.PanicIfNeeded(err)
 
 	for _, channel := range res {
-		channels = append(channels, entity.NewChannelResponse(&channel))
+		channels = append(channels, entity.NewChannelResponse(channel))
 	}
 
 	return channels

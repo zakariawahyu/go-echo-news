@@ -17,8 +17,8 @@ func NewRecommendedContentRepository(DB *bun.DB) recommended_content.Recommended
 	}
 }
 
-func (repo *recommendedContentRepository) GetByContentID(ctx context.Context, contentID int64) ([]entity.RecommendedContent, error) {
-	recommended := []entity.RecommendedContent{}
+func (repo *recommendedContentRepository) GetByContentID(ctx context.Context, contentID int64) ([]*entity.RecommendedContent, error) {
+	recommended := []*entity.RecommendedContent{}
 
 	if err := repo.DB.NewSelect().Model(&recommended).Where("content_id = ?", contentID).Scan(ctx); err != nil {
 		return nil, err

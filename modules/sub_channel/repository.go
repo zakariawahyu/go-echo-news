@@ -6,7 +6,7 @@ import (
 )
 
 type SubChannelRepository interface {
-	GetAll(ctx context.Context) (*[]entity.SubChannel, error)
+	GetAll(ctx context.Context) ([]*entity.SubChannel, error)
 	GetBySlugOrId(ctx context.Context, slug string) (*entity.SubChannel, error)
 	GetMetas(ctx context.Context, slug string) (interface{}, error)
 }

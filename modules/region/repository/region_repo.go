@@ -18,10 +18,10 @@ func NewRegionRepository(DB *bun.DB) region.RegionRepository {
 	}
 }
 
-func (repo *regionRepository) GetAll(ctx context.Context) (*[]entity.Region, error) {
-	region := &[]entity.Region{}
+func (repo *regionRepository) GetAll(ctx context.Context) ([]*entity.Region, error) {
+	region := []*entity.Region{}
 
-	if err := repo.DB.NewSelect().Model(region).Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(&region).Scan(ctx); err != nil {
 		return nil, err
 	}
 

@@ -27,8 +27,8 @@ func (serv *itemServices) GetItemByTypes(ctx context.Context, types string) (ite
 	res, err := serv.itemRepo.GetByType(c, types)
 	exception.PanicIfNeeded(err)
 
-	for _, item := range *res {
-		items = append(items, entity.NewItemResponse(&item))
+	for _, item := range res {
+		items = append(items, entity.NewItemResponse(item))
 	}
 
 	return items
