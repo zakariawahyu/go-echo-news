@@ -45,7 +45,7 @@ func NewHandler(cfg *config.Config, serv *Services, logger logger.Logger) {
 	e.Use(middleware.RequestID())
 	NewAppHandler(e)
 
-	contentController := _contentController.NewContentController(serv.contentServices)
+	contentController := _contentController.NewContentController(serv.contentServices, logger)
 	channelController := _channelController.NewChannelController(serv.channelServices)
 	subChannelController := _subChannelController.NewSubChannelController(serv.subChannelServices)
 	regionController := _regionController.NewRegionController(serv.regionServices)
