@@ -10,24 +10,27 @@ import (
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
+	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"time"
 )
 
 type configServices struct {
-	configRepo       config.ConfigRepository
-	channelRepo      channel.ChannelRepository
-	subChannelRepo   sub_channel.SubChannelRepository
-	regionRepository region.RegionRepository
-	contextTimeout   time.Duration
+	configRepo     config.ConfigRepository
+	channelRepo    channel.ChannelRepository
+	subChannelRepo sub_channel.SubChannelRepository
+	regionRepo     region.RegionRepository
+	zapLogger      logger.Logger
+	contextTimeout time.Duration
 }
 
-func NewConfigServices(configRepo config.ConfigRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepository region.RegionRepository, timeout time.Duration) config.ConfigServices {
+func NewConfigServices(configRepo config.ConfigRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, zapLogger logger.Logger, timeout time.Duration) config.ConfigServices {
 	return &configServices{
-		configRepo:       configRepo,
-		channelRepo:      channelRepo,
-		subChannelRepo:   subChannelRepo,
-		regionRepository: regionRepository,
-		contextTimeout:   timeout,
+		configRepo:     configRepo,
+		channelRepo:    channelRepo,
+		subChannelRepo: subChannelRepo,
+		regionRepo:     regionRepo,
+		zapLogger:      zapLogger,
+		contextTimeout: timeout,
 	}
 }
 
@@ -36,6 +39,9 @@ func (serv *configServices) GetAllConfig(ctx context.Context) (configs []entity.
 	defer cancel()
 
 	res, err := serv.configRepo.GetAll(c)
+	if err != nil {
+		serv.zapLogger.Errorf("configServ.GetAllConfig.configRepo.GetAll, err = %s", err)
+	}
 	exception.PanicIfNeeded(err)
 
 	for _, config := range res {
@@ -54,16 +60,26 @@ func (serv *configServices) GetMetas(ctx context.Context, types string, key stri
 
 	if types == "channel" {
 		data, err = serv.channelRepo.GetMetas(c, key)
+		if err != nil {
+			serv.zapLogger.Errorf("configServ.GetMetas.channelRepo.GetMetas, err = %s", err)
+		}
 		exception.PanicIfNeeded(err)
 	} else if types == "subchannel" {
 		data, err = serv.subChannelRepo.GetMetas(c, key)
+		if err != nil {
+			serv.zapLogger.Errorf("configServ.GetMetas.subChannelRepo.GetMetas, err = %s", err)
+		}
 		exception.PanicIfNeeded(err)
 	} else if types == "region" {
-		data, err = serv.regionRepository.GetMetas(c, key)
+		data, err = serv.regionRepo.GetMetas(c, key)
+		if err != nil {
+			serv.zapLogger.Errorf("configServ.GetMetas.regionRepo.GetMetas, err = %s", err)
+		}
 		exception.PanicIfNeeded(err)
 	} else {
 		data = OtherMeta(key)
 		if data == nil {
+			serv.zapLogger.Errorf("configServ.GetMetas.NotFound, err = %s", helpers.ErrNotFound)
 			exception.PanicIfNeeded(helpers.ErrNotFound)
 		}
 	}

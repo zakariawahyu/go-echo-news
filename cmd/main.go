@@ -17,10 +17,10 @@ func main() {
 		exception.PanicIfNeeded(err)
 	}()
 
-	repo := server.NewRepository(db)
-	serv := server.NewServices(repo, cfg.App.ContextTimeout)
 	appLogger := logger.NewApiLogger(cfg)
 	appLogger.InitLogger()
+	repo := server.NewRepository(db)
+	serv := server.NewServices(repo, appLogger, cfg.App.ContextTimeout)
 
 	server.NewHandler(cfg, serv, appLogger)
 }

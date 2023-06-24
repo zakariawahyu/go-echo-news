@@ -15,6 +15,7 @@ import (
 	_scheduleServices "github.com/zakariawahyu/go-echo-news/modules/schedule/services"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
 	_subChannelServices "github.com/zakariawahyu/go-echo-news/modules/sub_channel/services"
+	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"time"
 )
 
@@ -28,14 +29,14 @@ type Services struct {
 	scheduleServices   schedule.ScheduleServices
 }
 
-func NewServices(repo *Repository, timeoutContext time.Duration) *Services {
+func NewServices(repo *Repository, zapLogger logger.Logger, timeoutContext time.Duration) *Services {
 	return &Services{
-		contentServices:    _contentServices.NewContentServices(repo.contentRepo, repo.contentRedisRepo, repo.recommendedContentRepo, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, timeoutContext),
-		channelServices:    _channelServices.NewChannelServices(repo.channelRepo, repo.channelRedisRepo, timeoutContext),
-		subChannelServices: _subChannelServices.NewSubChannelServices(repo.subChannelRepo, timeoutContext),
-		regionServices:     _regionServices.NewRegionServices(repo.regionRepo, timeoutContext),
-		configServices:     _configServices.NewConfigServices(repo.configRepo, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, timeoutContext),
-		itemServices:       _itemServices.NewItemServices(repo.itemRepo, timeoutContext),
-		scheduleServices:   _scheduleServices.NewScheduleServices(repo.scheduleRepo, timeoutContext),
+		contentServices:    _contentServices.NewContentServices(repo.contentRepo, repo.contentRedisRepo, repo.recommendedContentRepo, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, zapLogger, timeoutContext),
+		channelServices:    _channelServices.NewChannelServices(repo.channelRepo, repo.channelRedisRepo, zapLogger, timeoutContext),
+		subChannelServices: _subChannelServices.NewSubChannelServices(repo.subChannelRepo, zapLogger, timeoutContext),
+		regionServices:     _regionServices.NewRegionServices(repo.regionRepo, zapLogger, timeoutContext),
+		configServices:     _configServices.NewConfigServices(repo.configRepo, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, zapLogger, timeoutContext),
+		itemServices:       _itemServices.NewItemServices(repo.itemRepo, zapLogger, timeoutContext),
+		scheduleServices:   _scheduleServices.NewScheduleServices(repo.scheduleRepo, zapLogger, timeoutContext),
 	}
 }

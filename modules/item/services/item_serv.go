@@ -5,17 +5,20 @@ import (
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/item"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
+	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"time"
 )
 
 type itemServices struct {
 	itemRepo       item.ItemRepository
+	zapLogger      logger.Logger
 	contextTimeout time.Duration
 }
 
-func NewItemServices(itemRepo item.ItemRepository, timeout time.Duration) item.ItemServices {
+func NewItemServices(itemRepo item.ItemRepository, zapLogger logger.Logger, timeout time.Duration) item.ItemServices {
 	return &itemServices{
 		itemRepo:       itemRepo,
+		zapLogger:      zapLogger,
 		contextTimeout: timeout,
 	}
 }
@@ -25,6 +28,9 @@ func (serv *itemServices) GetItemByTypes(ctx context.Context, types string) (ite
 	defer cancel()
 
 	res, err := serv.itemRepo.GetByType(c, types)
+	if err != nil {
+		serv.zapLogger.Errorf("itemServ.GetItemByTypes.itemRepo.GetByType, err = %s", err)
+	}
 	exception.PanicIfNeeded(err)
 
 	for _, item := range res {

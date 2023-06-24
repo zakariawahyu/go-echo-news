@@ -5,17 +5,20 @@ import (
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/schedule"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
+	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"time"
 )
 
 type scheduleServices struct {
 	scheduleRepo   schedule.ScheduleRepository
+	zapLogger      logger.Logger
 	contextTimeout time.Duration
 }
 
-func NewScheduleServices(scheduleRepo schedule.ScheduleRepository, timeout time.Duration) schedule.ScheduleServices {
+func NewScheduleServices(scheduleRepo schedule.ScheduleRepository, zapLogger logger.Logger, timeout time.Duration) schedule.ScheduleServices {
 	return &scheduleServices{
 		scheduleRepo:   scheduleRepo,
+		zapLogger:      zapLogger,
 		contextTimeout: timeout,
 	}
 }
@@ -25,6 +28,9 @@ func (serv *scheduleServices) GetAllSchedule(ctx context.Context) interface{} {
 	defer cancel()
 
 	res, err := serv.scheduleRepo.GetAll(c)
+	if err != nil {
+		serv.zapLogger.Errorf("scheduleServ.GetAllSchedule.scheduleRepo.GetAll, err = %s", err)
+	}
 	exception.PanicIfNeeded(err)
 
 	collections := make(map[string][]*entity.Schedule)
@@ -40,6 +46,9 @@ func (serv *scheduleServices) GetScheduleBySpecificKey(ctx context.Context, key 
 	defer cancel()
 
 	schedule, err := serv.scheduleRepo.GetBySpecificKey(c, key)
+	if err != nil {
+		serv.zapLogger.Errorf("scheduleServ.GetScheduleBySpecificKey.scheduleRepo.GetBySpecificKey, err = %s", err)
+	}
 	exception.PanicIfNeeded(err)
 
 	return entity.NewScheduleResponse(schedule)
