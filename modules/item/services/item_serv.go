@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/item"
-	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"time"
 )
@@ -30,8 +29,8 @@ func (serv *itemServices) GetItemByTypes(ctx context.Context, types string) (ite
 	res, err := serv.itemRepo.GetByType(c, types)
 	if err != nil {
 		serv.zapLogger.Errorf("itemServ.GetItemByTypes.itemRepo.GetByType, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	for _, item := range res {
 		items = append(items, entity.NewItemResponse(item))

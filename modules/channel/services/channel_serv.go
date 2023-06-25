@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/channel"
-	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"time"
@@ -34,8 +33,8 @@ func (serv *channelServices) GetAllChannel(ctx context.Context) (channels []enti
 	res, err := serv.channelRepo.GetAll(c)
 	if err != nil {
 		serv.zapLogger.Errorf("channelServ.GetAllChannel.channelRepo.GetAll, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	for _, channel := range res {
 		channels = append(channels, entity.NewChannelResponse(channel))
@@ -56,14 +55,14 @@ func (serv *channelServices) GetChannelBySlugOrId(ctx context.Context, slug stri
 	channel, err := serv.channelRepo.GetBySlugOrId(c, slug)
 	if err != nil {
 		serv.zapLogger.Errorf("channelServ.GetChannelBySlugOrId.channelRepo.GetBySlugOrId, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	err = serv.redisRepo.SetChannel(c, helpers.KeyRedis(fmt.Sprintf("channel-%s", slug), ""), helpers.Slowly, channel)
 	if err != nil {
 		serv.zapLogger.Errorf("channelServ.GetChannelBySlugOrId.redisRepo.SetChannel, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	return entity.NewChannelResponse(channel)
 }

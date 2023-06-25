@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/region"
-	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"time"
 )
@@ -30,8 +29,8 @@ func (serv *regionServices) GetAllRegion(ctx context.Context) (regions []entity.
 	res, err := serv.regionRepo.GetAll(c)
 	if err != nil {
 		serv.zapLogger.Errorf("regionServ.GetAllRegion.regionRepo.GetAll, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	for _, region := range res {
 		regions = append(regions, entity.NewRegionResponse(region))
@@ -47,8 +46,8 @@ func (serv *regionServices) GetRegionBySlugOrId(ctx context.Context, slug string
 	region, err := serv.regionRepo.GetBySlugOrId(c, slug)
 	if err != nil {
 		serv.zapLogger.Errorf("regionServ.GetRegionBySlugOrId.regionRepo.GetBySlugOrId, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	return entity.NewRegionResponse(region)
 }

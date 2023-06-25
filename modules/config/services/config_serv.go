@@ -8,7 +8,6 @@ import (
 	"github.com/zakariawahyu/go-echo-news/modules/config"
 	"github.com/zakariawahyu/go-echo-news/modules/region"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
-	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"time"
@@ -41,8 +40,8 @@ func (serv *configServices) GetAllConfig(ctx context.Context) (configs []entity.
 	res, err := serv.configRepo.GetAll(c)
 	if err != nil {
 		serv.zapLogger.Errorf("configServ.GetAllConfig.configRepo.GetAll, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	for _, config := range res {
 		configs = append(configs, entity.NewConfigResponse(config))
@@ -62,25 +61,25 @@ func (serv *configServices) GetMetas(ctx context.Context, types string, key stri
 		data, err = serv.channelRepo.GetMetas(c, key)
 		if err != nil {
 			serv.zapLogger.Errorf("configServ.GetMetas.channelRepo.GetMetas, err = %s", err)
+			panic(err)
 		}
-		exception.PanicIfNeeded(err)
 	} else if types == "subchannel" {
 		data, err = serv.subChannelRepo.GetMetas(c, key)
 		if err != nil {
 			serv.zapLogger.Errorf("configServ.GetMetas.subChannelRepo.GetMetas, err = %s", err)
+			panic(err)
 		}
-		exception.PanicIfNeeded(err)
 	} else if types == "region" {
 		data, err = serv.regionRepo.GetMetas(c, key)
 		if err != nil {
 			serv.zapLogger.Errorf("configServ.GetMetas.regionRepo.GetMetas, err = %s", err)
+			panic(err)
 		}
-		exception.PanicIfNeeded(err)
 	} else {
 		data = OtherMeta(key)
 		if data == nil {
 			serv.zapLogger.Errorf("configServ.GetMetas.NotFound, err = %s", helpers.ErrNotFound)
-			exception.PanicIfNeeded(helpers.ErrNotFound)
+			panic(helpers.ErrNotFound)
 		}
 	}
 

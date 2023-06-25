@@ -3,7 +3,6 @@ package services
 import (
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
-	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"golang.org/x/net/context"
 	"time"
@@ -30,8 +29,8 @@ func (serv *subChannelServices) GetAllSubChannel(ctx context.Context) (subChanne
 	res, err := serv.subChannelRepo.GetAll(c)
 	if err != nil {
 		serv.zapLogger.Errorf("subChannelServ.GetAllSubChannel.subChannelRepo.GetAll, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	for _, subChannel := range res {
 		subChannels = append(subChannels, entity.NewSubChannelResponse(subChannel))
@@ -47,8 +46,8 @@ func (serv *subChannelServices) GetSubChannelBySlugOrId(ctx context.Context, slu
 	subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, slug)
 	if err != nil {
 		serv.zapLogger.Errorf("subChannelServ.GetSubChannelBySlugOrId.subChannelRepo.GetBySlugOrId, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	return entity.NewSubChannelResponse(subChannel)
 }

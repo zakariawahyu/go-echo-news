@@ -3,7 +3,6 @@ package controller
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
-	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers/payload"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"github.com/zakariawahyu/go-echo-news/pkg/response"
@@ -45,8 +44,8 @@ func (ctrl *ContentController) NewsRowAll(ctx echo.Context) error {
 		BindError()
 	if err != nil {
 		ctrl.zapLogger.Errorf("contentCtrl.NewsRowAll.QueryParamsBinder, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	contents := ctrl.contentServices.GetContentAllRow(c, types, key, payloads.Limit, payloads.Offset)
 
@@ -66,8 +65,8 @@ func (ctrl *ContentController) NewsRowAdsAll(ctx echo.Context) error {
 		BindError()
 	if err != nil {
 		ctrl.zapLogger.Errorf("contentCtrl.NewsRowAll.QueryParamsBinder, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	contents := ctrl.contentServices.GetContentAllRowAds(c, types, key, payloads.Limit, payloads.Offset)
 
@@ -87,8 +86,8 @@ func (ctrl *ContentController) NewsRowLatestAll(ctx echo.Context) error {
 		BindError()
 	if err != nil {
 		ctrl.zapLogger.Errorf("contentCtrl.NewsRowLatestAll.QueryParamsBinder, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	contents := ctrl.contentServices.GetContentAllLatest(c, types, key, payloads.Limit, payloads.Offset)
 
@@ -105,8 +104,8 @@ func (ctrl *ContentController) NewsRowLatestVideoAll(ctx echo.Context) error {
 		BindError()
 	if err != nil {
 		ctrl.zapLogger.Errorf("contentCtrl.NewsRowLatestVideoAll.QueryParamsBinder, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	contents := ctrl.contentServices.GetContentAllLatestMultimedia(c, "video", false, payloads.Limit, payloads.Offset)
 
@@ -123,8 +122,8 @@ func (ctrl *ContentController) NewsRowLatestPhotoAll(ctx echo.Context) error {
 		BindError()
 	if err != nil {
 		ctrl.zapLogger.Errorf("contentCtrl.NewsRowLatestPhotoAll.QueryParamsBinder, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	contents := ctrl.contentServices.GetContentAllLatestMultimedia(c, "photo", false, payloads.Limit, payloads.Offset)
 
@@ -141,8 +140,8 @@ func (ctrl *ContentController) NewsRowLatestInfografisAll(ctx echo.Context) erro
 		BindError()
 	if err != nil {
 		ctrl.zapLogger.Errorf("contentCtrl.NewsRowLatestInfografisAll.QueryParamsBinder, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	contents := ctrl.contentServices.GetContentAllLatestMultimedia(c, "infografis", false, payloads.Limit, payloads.Offset)
 
@@ -159,8 +158,8 @@ func (ctrl *ContentController) NewsRowLatestVideoFeaturedAll(ctx echo.Context) e
 		BindError()
 	if err != nil {
 		ctrl.zapLogger.Errorf("contentCtrl.NewsRowLatestVideoFeaturedAll.QueryParamsBinder, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	contents := ctrl.contentServices.GetContentAllLatestMultimedia(c, "video", true, payloads.Limit, payloads.Offset)
 
@@ -177,8 +176,8 @@ func (ctrl *ContentController) NewsRowLatestPhotoFeaturedAll(ctx echo.Context) e
 		BindError()
 	if err != nil {
 		ctrl.zapLogger.Errorf("contentCtrl.NewsRowLatestPhotoFeaturedAll.QueryParamsBinder, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	contents := ctrl.contentServices.GetContentAllLatestMultimedia(c, "photo", true, payloads.Limit, payloads.Offset)
 
@@ -195,8 +194,8 @@ func (ctrl *ContentController) NewsRowLatestInfografisFeaturedAll(ctx echo.Conte
 		BindError()
 	if err != nil {
 		ctrl.zapLogger.Errorf("contentCtrl.NewsRowLatestInfografisFeaturedAll.QueryParamsBinder, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	contents := ctrl.contentServices.GetContentAllLatestMultimedia(c, "infografis", true, payloads.Limit, payloads.Offset)
 

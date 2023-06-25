@@ -8,7 +8,6 @@ import (
 	"github.com/zakariawahyu/go-echo-news/modules/recommended_content"
 	"github.com/zakariawahyu/go-echo-news/modules/region"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
-	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"strconv"
@@ -51,15 +50,15 @@ func (serv *contentServices) GetContentBySlugOrId(ctx context.Context, slug stri
 	content, err := serv.contentRepo.GetBySlugOrId(c, slug)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRepo.GetBySlugOrId, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	if !content.IsEmpty() {
 		recommended, err := serv.recommendedContentRepo.GetByContentID(c, content.ID)
 		if err != nil {
 			serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.recommendedContentRepo.GetByContentID, err = %s", err)
+			panic(err)
 		}
-		exception.PanicIfNeeded(err)
 
 		tagName := content.TagNameArray()
 
@@ -73,8 +72,8 @@ func (serv *contentServices) GetContentBySlugOrId(ctx context.Context, slug stri
 	err = serv.redisRepo.SetContent(c, helpers.KeyRedis("read", slug), helpers.Faster, content)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.redisRepo.SetContent, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	return entity.NewContentResponse(content)
 }
@@ -88,37 +87,37 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
 			if err != nil {
 				serv.zapLogger.Errorf("contentServ.GetContentAllRow.channelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
 			}
-			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(channel.ID, 10)
 		} else if types == "region" {
 			region, err := serv.regionRepo.GetBySlugOrId(c, key)
 			if err != nil {
 				serv.zapLogger.Errorf("contentServ.GetContentAllRow.regionRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
 			}
-			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(region.ID, 10)
 		} else if types == "subchannel" {
 			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
 			if err != nil {
 				serv.zapLogger.Errorf("contentServ.GetContentAllRow.subChannelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
 			}
-			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(subChannel.ID, 10)
 		} else if types != "channel" || types != "subchannel" || types != "region" {
 			serv.zapLogger.Errorf("contentServ.GetContentAllRow.NotFound, err = %s", helpers.ErrNotFound)
-			exception.PanicIfNeeded(helpers.ErrNotFound)
+			panic(helpers.ErrNotFound)
 		}
 	}
 
 	res, err := serv.contentRepo.GetAllRow(c, types, key, limit, offset)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllRow.contentRepo.GetAllRow, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	for _, content := range res {
 		contents = append(contents, entity.NewContentRowResponse(content))
@@ -136,37 +135,37 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
 			if err != nil {
 				serv.zapLogger.Errorf("contentServ.GetContentAllRowAds.channelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
 			}
-			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(channel.ID, 10)
 		} else if types == "region" {
 			region, err := serv.regionRepo.GetBySlugOrId(c, key)
 			if err != nil {
 				serv.zapLogger.Errorf("contentServ.GetContentAllRowAds.regionRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
 			}
-			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(region.ID, 10)
 		} else if types == "subchannel" {
 			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
 			if err != nil {
 				serv.zapLogger.Errorf("contentServ.GetContentAllRowAds.subChannelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
 			}
-			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(subChannel.ID, 10)
 		} else if types != "channel" || types != "subchannel" || types != "region" {
 			serv.zapLogger.Errorf("contentServ.GetContentAllRowAds.NotFound, err = %s", helpers.ErrNotFound)
-			exception.PanicIfNeeded(helpers.ErrNotFound)
+			panic(helpers.ErrNotFound)
 		}
 	}
 
 	res, err := serv.contentRepo.GetAllRowAds(c, types, key, limit, offset)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllRowAds.contentRepo.GetAllRowAds, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	for _, content := range res {
 		contents = append(contents, entity.NewContentRowResponse(content))
@@ -184,37 +183,37 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
 			if err != nil {
 				serv.zapLogger.Errorf("contentServ.GetContentAllLatest.channelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
 			}
-			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(channel.ID, 10)
 		} else if types == "region" {
 			region, err := serv.regionRepo.GetBySlugOrId(c, key)
 			if err != nil {
 				serv.zapLogger.Errorf("contentServ.GetContentAllLatest.regionRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
 			}
-			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(region.ID, 10)
 		} else if types == "subchannel" {
 			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
 			if err != nil {
 				serv.zapLogger.Errorf("contentServ.GetContentAllLatest.subChannelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
 			}
-			exception.PanicIfNeeded(err)
 
 			key = strconv.FormatInt(subChannel.ID, 10)
 		} else if types != "channel" || types != "subchannel" || types != "region" {
 			serv.zapLogger.Errorf("contentServ.GetContentAllLatest.NotFound, err = %s", helpers.ErrNotFound)
-			exception.PanicIfNeeded(helpers.ErrNotFound)
+			panic(helpers.ErrNotFound)
 		}
 	}
 
 	res, err := serv.contentRepo.GetAllLatest(c, types, key, limit, offset)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllLatest.contentRepo.GetAllLatest, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	for _, content := range res {
 		contents = append(contents, entity.NewContentRowResponse(content))
@@ -230,8 +229,8 @@ func (serv *contentServices) GetContentAllLatestMultimedia(ctx context.Context, 
 	res, err := serv.contentRepo.GetAllLatestMultimedia(c, types, featured, limit, offset)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllLatestMultimedia.contentRepo.GetAllLatestMultimedia, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	for _, content := range res {
 		contents = append(contents, entity.NewContentRowResponse(content))

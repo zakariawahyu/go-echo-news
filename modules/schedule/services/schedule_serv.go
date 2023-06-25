@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/schedule"
-	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"time"
 )
@@ -30,8 +29,8 @@ func (serv *scheduleServices) GetAllSchedule(ctx context.Context) interface{} {
 	res, err := serv.scheduleRepo.GetAll(c)
 	if err != nil {
 		serv.zapLogger.Errorf("scheduleServ.GetAllSchedule.scheduleRepo.GetAll, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	collections := make(map[string][]*entity.Schedule)
 	for _, b := range res {
@@ -48,8 +47,8 @@ func (serv *scheduleServices) GetScheduleBySpecificKey(ctx context.Context, key 
 	schedule, err := serv.scheduleRepo.GetBySpecificKey(c, key)
 	if err != nil {
 		serv.zapLogger.Errorf("scheduleServ.GetScheduleBySpecificKey.scheduleRepo.GetBySpecificKey, err = %s", err)
+		panic(err)
 	}
-	exception.PanicIfNeeded(err)
 
 	return entity.NewScheduleResponse(schedule)
 }
