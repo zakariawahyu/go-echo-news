@@ -16,9 +16,19 @@ type ConfigResponse struct {
 	Value         string `json:"value"`
 }
 
-func NewConfigResponse(config *Config) ConfigResponse {
+func NewConfigResponse(config *ConfigResponse) ConfigResponse {
 	return ConfigResponse{
 		Key:   config.Key,
 		Value: config.Value,
 	}
+}
+
+func NewConfigArrayResponse(config []*ConfigResponse) []ConfigResponse {
+	configRes := []ConfigResponse{}
+
+	for _, value := range config {
+		configRes = append(configRes, NewConfigResponse(value))
+	}
+
+	return configRes
 }

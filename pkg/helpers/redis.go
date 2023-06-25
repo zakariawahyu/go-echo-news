@@ -30,6 +30,13 @@ func KeyRedisRowContent(basePrefix string, types string, key string, limit int, 
 	return fmt.Sprintf("v2-%s:%d-%d", basePrefix, limit, offset)
 }
 
+func KeyRedisRowContentMultimedia(basePrefix string, types string, featured bool, limit int, offset int) string {
+	if featured {
+		return fmt.Sprintf("v2-%s-featured-%s:%d-%d", basePrefix, types, limit, offset)
+	}
+	return fmt.Sprintf("v2-%s-%s:%d-%d", basePrefix, types, limit, offset)
+}
+
 func TtlRedis(ttl int) time.Duration {
 	return time.Second * time.Duration(ttl)
 }

@@ -35,7 +35,7 @@ func NewServices(repo *Repository, zapLogger logger.Logger, timeoutContext time.
 		channelServices:    _channelServices.NewChannelServices(repo.channelRepo, repo.channelRedisRepo, zapLogger, timeoutContext),
 		subChannelServices: _subChannelServices.NewSubChannelServices(repo.subChannelRepo, zapLogger, timeoutContext),
 		regionServices:     _regionServices.NewRegionServices(repo.regionRepo, zapLogger, timeoutContext),
-		configServices:     _configServices.NewConfigServices(repo.configRepo, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, zapLogger, timeoutContext),
+		configServices:     _configServices.NewConfigServices(repo.configRepo, repo.configRedisRep, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, zapLogger, timeoutContext),
 		itemServices:       _itemServices.NewItemServices(repo.itemRepo, zapLogger, timeoutContext),
 		scheduleServices:   _scheduleServices.NewScheduleServices(repo.scheduleRepo, zapLogger, timeoutContext),
 	}

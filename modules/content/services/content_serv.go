@@ -16,7 +16,7 @@ import (
 
 type contentServices struct {
 	contentRepo            content.ContentRepository
-	redisRepo              content.ContentRedisRepository
+	contentRedisRepo       content.ContentRedisRepository
 	recommendedContentRepo recommended_content.RecommendedContentRepository
 	channelRepo            channel.ChannelRepository
 	subChannelRepo         sub_channel.SubChannelRepository
@@ -25,10 +25,10 @@ type contentServices struct {
 	contextTimeout         time.Duration
 }
 
-func NewContentServices(contentRepo content.ContentRepository, redisRepo content.ContentRedisRepository, recommendedContentRepo recommended_content.RecommendedContentRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, zapLogger logger.Logger, timeout time.Duration) content.ContentServices {
+func NewContentServices(contentRepo content.ContentRepository, contentRedisRepo content.ContentRedisRepository, recommendedContentRepo recommended_content.RecommendedContentRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, zapLogger logger.Logger, timeout time.Duration) content.ContentServices {
 	return &contentServices{
 		contentRepo:            contentRepo,
-		redisRepo:              redisRepo,
+		contentRedisRepo:       contentRedisRepo,
 		recommendedContentRepo: recommendedContentRepo,
 		channelRepo:            channelRepo,
 		subChannelRepo:         subChannelRepo,
@@ -42,9 +42,9 @@ func (serv *contentServices) GetContentBySlugOrId(ctx context.Context, slug stri
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
-	newBase, err := serv.redisRepo.GetContent(c, helpers.KeyRedis("read", slug))
-	if newBase != nil {
-		return entity.NewContentResponse(newBase)
+	redisData, err := serv.contentRedisRepo.GetContent(c, helpers.KeyRedis("read", slug))
+	if redisData != nil {
+		return entity.NewContentResponse(redisData)
 	}
 
 	content, err := serv.contentRepo.GetBySlugOrId(c, slug)
@@ -69,9 +69,8 @@ func (serv *contentServices) GetContentBySlugOrId(ctx context.Context, slug stri
 		content.Content = helpers.AutoLinkedTags(tagName, content.Content, content.TypeID)
 	}
 
-	err = serv.redisRepo.SetContent(c, helpers.KeyRedis("read", slug), helpers.Faster, content)
-	if err != nil {
-		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.redisRepo.SetContent, err = %s", err)
+	if err = serv.contentRedisRepo.SetContent(c, helpers.KeyRedis("read", slug), helpers.Faster, content); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetContent, err = %s", err)
 		panic(err)
 	}
 
@@ -84,9 +83,9 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 
 	var id string
 
-	newBase, err := serv.redisRepo.GetAllContentRow(c, helpers.KeyRedisRowContent("news-row", types, key, limit, offset))
-	if newBase != nil {
-		return entity.NewContentRowArrayResponse(newBase)
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisRowContent("news-row", types, key, limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
 	}
 
 	if types != "" {
@@ -128,8 +127,8 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 
 	contents = entity.NewContentRowArrayResponse(res)
 
-	if err = serv.redisRepo.SetALlContentRow(c, helpers.KeyRedisRowContent("news-row", types, key, limit, offset), helpers.Faster, contents); err != nil {
-		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.redisRepo.SetContent, err = %s", err)
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisRowContent("news-row", types, key, limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
 
@@ -140,6 +139,13 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
+	var id string
+
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisRowContent("news-row-ads", types, key, limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
+	}
+
 	if types != "" {
 		if types == "channel" {
 			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
@@ -148,7 +154,7 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 				panic(err)
 			}
 
-			key = strconv.FormatInt(channel.ID, 10)
+			id = strconv.FormatInt(channel.ID, 10)
 		} else if types == "region" {
 			region, err := serv.regionRepo.GetBySlugOrId(c, key)
 			if err != nil {
@@ -156,7 +162,7 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 				panic(err)
 			}
 
-			key = strconv.FormatInt(region.ID, 10)
+			id = strconv.FormatInt(region.ID, 10)
 		} else if types == "subchannel" {
 			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
 			if err != nil {
@@ -164,21 +170,24 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 				panic(err)
 			}
 
-			key = strconv.FormatInt(subChannel.ID, 10)
+			id = strconv.FormatInt(subChannel.ID, 10)
 		} else if types != "channel" || types != "subchannel" || types != "region" {
 			serv.zapLogger.Errorf("contentServ.GetContentAllRowAds.NotFound, err = %s", helpers.ErrNotFound)
 			panic(helpers.ErrNotFound)
 		}
 	}
 
-	res, err := serv.contentRepo.GetAllRowAds(c, types, key, limit, offset)
+	res, err := serv.contentRepo.GetAllRowAds(c, types, id, limit, offset)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllRowAds.contentRepo.GetAllRowAds, err = %s", err)
 		panic(err)
 	}
 
-	for _, content := range res {
-		contents = append(contents, entity.NewContentRowResponse(content))
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisRowContent("news-row-ads", types, key, limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
+		panic(err)
 	}
 
 	return contents
@@ -188,6 +197,13 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
+	var id string
+
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisRowContent("latest", types, key, limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
+	}
+
 	if types != "" {
 		if types == "channel" {
 			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
@@ -196,7 +212,7 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 				panic(err)
 			}
 
-			key = strconv.FormatInt(channel.ID, 10)
+			id = strconv.FormatInt(channel.ID, 10)
 		} else if types == "region" {
 			region, err := serv.regionRepo.GetBySlugOrId(c, key)
 			if err != nil {
@@ -204,7 +220,7 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 				panic(err)
 			}
 
-			key = strconv.FormatInt(region.ID, 10)
+			id = strconv.FormatInt(region.ID, 10)
 		} else if types == "subchannel" {
 			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
 			if err != nil {
@@ -212,21 +228,24 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 				panic(err)
 			}
 
-			key = strconv.FormatInt(subChannel.ID, 10)
+			id = strconv.FormatInt(subChannel.ID, 10)
 		} else if types != "channel" || types != "subchannel" || types != "region" {
 			serv.zapLogger.Errorf("contentServ.GetContentAllLatest.NotFound, err = %s", helpers.ErrNotFound)
 			panic(helpers.ErrNotFound)
 		}
 	}
 
-	res, err := serv.contentRepo.GetAllLatest(c, types, key, limit, offset)
+	res, err := serv.contentRepo.GetAllLatest(c, types, id, limit, offset)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllLatest.contentRepo.GetAllLatest, err = %s", err)
 		panic(err)
 	}
 
-	for _, content := range res {
-		contents = append(contents, entity.NewContentRowResponse(content))
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisRowContent("latest", types, key, limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
+		panic(err)
 	}
 
 	return contents
@@ -236,14 +255,22 @@ func (serv *contentServices) GetContentAllLatestMultimedia(ctx context.Context, 
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisRowContentMultimedia("latest", types, featured, limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
+	}
+
 	res, err := serv.contentRepo.GetAllLatestMultimedia(c, types, featured, limit, offset)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllLatestMultimedia.contentRepo.GetAllLatestMultimedia, err = %s", err)
 		panic(err)
 	}
 
-	for _, content := range res {
-		contents = append(contents, entity.NewContentRowResponse(content))
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisRowContentMultimedia("latest", types, featured, limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
+		panic(err)
 	}
 
 	return contents

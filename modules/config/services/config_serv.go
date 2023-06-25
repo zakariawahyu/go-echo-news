@@ -14,22 +14,24 @@ import (
 )
 
 type configServices struct {
-	configRepo     config.ConfigRepository
-	channelRepo    channel.ChannelRepository
-	subChannelRepo sub_channel.SubChannelRepository
-	regionRepo     region.RegionRepository
-	zapLogger      logger.Logger
-	contextTimeout time.Duration
+	configRepo      config.ConfigRepository
+	configRedisRepo config.ConfigRedisRepository
+	channelRepo     channel.ChannelRepository
+	subChannelRepo  sub_channel.SubChannelRepository
+	regionRepo      region.RegionRepository
+	zapLogger       logger.Logger
+	contextTimeout  time.Duration
 }
 
-func NewConfigServices(configRepo config.ConfigRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, zapLogger logger.Logger, timeout time.Duration) config.ConfigServices {
+func NewConfigServices(configRepo config.ConfigRepository, configRedisRepo config.ConfigRedisRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, zapLogger logger.Logger, timeout time.Duration) config.ConfigServices {
 	return &configServices{
-		configRepo:     configRepo,
-		channelRepo:    channelRepo,
-		subChannelRepo: subChannelRepo,
-		regionRepo:     regionRepo,
-		zapLogger:      zapLogger,
-		contextTimeout: timeout,
+		configRepo:      configRepo,
+		configRedisRepo: configRedisRepo,
+		channelRepo:     channelRepo,
+		subChannelRepo:  subChannelRepo,
+		regionRepo:      regionRepo,
+		zapLogger:       zapLogger,
+		contextTimeout:  timeout,
 	}
 }
 
@@ -37,14 +39,22 @@ func (serv *configServices) GetAllConfig(ctx context.Context) (configs []entity.
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
+	redisData, err := serv.configRedisRepo.GetAllConfig(c, helpers.KeyRedis("config", ""))
+	if redisData != nil {
+		return entity.NewConfigArrayResponse(redisData)
+	}
+
 	res, err := serv.configRepo.GetAll(c)
 	if err != nil {
 		serv.zapLogger.Errorf("configServ.GetAllConfig.configRepo.GetAll, err = %s", err)
 		panic(err)
 	}
 
-	for _, config := range res {
-		configs = append(configs, entity.NewConfigResponse(config))
+	configs = entity.NewConfigArrayResponse(res)
+
+	if err = serv.configRedisRepo.SetAllConfig(c, helpers.KeyRedis("config", ""), helpers.Slowest, configs); err != nil {
+		serv.zapLogger.Errorf("configServ.GetAllConfig.configRedisRepo.SetAllConfig, err = %s", err)
+		panic(err)
 	}
 
 	return configs

@@ -6,5 +6,10 @@ import (
 )
 
 type ConfigRepository interface {
-	GetAll(ctx context.Context) ([]*entity.Config, error)
+	GetAll(ctx context.Context) ([]*entity.ConfigResponse, error)
+}
+
+type ConfigRedisRepository interface {
+	GetAllConfig(ctx context.Context, key string) ([]*entity.ConfigResponse, error)
+	SetAllConfig(ctx context.Context, key string, ttl int, config []entity.ConfigResponse) error
 }

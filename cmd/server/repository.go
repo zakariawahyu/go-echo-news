@@ -29,6 +29,7 @@ type Repository struct {
 	subChannelRepo         sub_channel.SubChannelRepository
 	regionRepo             region.RegionRepository
 	configRepo             config.ConfigRepository
+	configRedisRep         config.ConfigRedisRepository
 	itemRepo               item.ItemRepository
 	scheduleRepo           schedule.ScheduleRepository
 }
@@ -43,6 +44,7 @@ func NewRepository(DB *db.Conn) *Repository {
 		subChannelRepo:         _subChannelRepository.NewSubChannelRepository(DB.Mysql),
 		regionRepo:             _regionRepo.NewRegionRepository(DB.Mysql),
 		configRepo:             _configRepo.NewConfigRepository(DB.Mysql),
+		configRedisRep:         _configRepo.NewConfigRedisRepo(DB.Redis),
 		itemRepo:               _itemRepo.NewItemRepository(DB.Mysql),
 		scheduleRepo:           _scheduleRepo.NewScheduleRepository(DB.Mysql),
 	}
