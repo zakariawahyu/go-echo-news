@@ -17,8 +17,8 @@ func NewItemRepository(DB *bun.DB) item.ItemRepository {
 	}
 }
 
-func (repo *itemRepository) GetByType(ctx context.Context, types string) ([]*entity.Item, error) {
-	item := []*entity.Item{}
+func (repo *itemRepository) GetByType(ctx context.Context, types string) ([]*entity.ItemResponse, error) {
+	item := []*entity.ItemResponse{}
 
 	if err := repo.DB.NewSelect().Model(&item).Where("type = ?", types).Scan(ctx); err != nil {
 		return nil, err

@@ -67,6 +67,11 @@ func (serv *configServices) GetMetas(ctx context.Context, types string, key stri
 	var data interface{}
 	var err error
 
+	redisData, err := serv.configRedisRepo.GetMetas(c, helpers.KeyRedisTypeKey("config", types, key, 0, 0))
+	if redisData != nil {
+		return redisData
+	}
+
 	if types == "channel" {
 		data, err = serv.channelRepo.GetMetas(c, key)
 		if err != nil {
@@ -91,6 +96,11 @@ func (serv *configServices) GetMetas(ctx context.Context, types string, key stri
 			serv.zapLogger.Errorf("configServ.GetMetas.NotFound, err = %s", helpers.ErrNotFound)
 			panic(helpers.ErrNotFound)
 		}
+	}
+
+	if err = serv.configRedisRepo.SetMetas(c, helpers.KeyRedisTypeKey("config", types, key, 0, 0), helpers.Slowest, data); err != nil {
+		serv.zapLogger.Errorf("configServ.GetAllConfig.configRedisRepo.SetAllConfig, err = %s", err)
+		panic(err)
 	}
 
 	return data

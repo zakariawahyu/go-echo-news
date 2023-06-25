@@ -28,7 +28,7 @@ type ItemResponse struct {
 	Url           string `json:"url"`
 }
 
-func NewItemResponse(item *Item) ItemResponse {
+func NewItemResponse(item *ItemResponse) ItemResponse {
 	return ItemResponse{
 		ID:    item.ID,
 		Type:  item.Type,
@@ -36,4 +36,14 @@ func NewItemResponse(item *Item) ItemResponse {
 		Url:   item.Url,
 		Image: item.Image,
 	}
+}
+
+func NewItemArrayResponse(item []*ItemResponse) []ItemResponse {
+	items := []ItemResponse{}
+
+	for _, value := range item {
+		items = append(items, NewItemResponse(value))
+	}
+
+	return items
 }

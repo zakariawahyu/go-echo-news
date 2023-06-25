@@ -31,6 +31,7 @@ type Repository struct {
 	configRepo             config.ConfigRepository
 	configRedisRep         config.ConfigRedisRepository
 	itemRepo               item.ItemRepository
+	itemRedisRepo          item.ItemRedisRepository
 	scheduleRepo           schedule.ScheduleRepository
 }
 
@@ -46,6 +47,7 @@ func NewRepository(DB *db.Conn) *Repository {
 		configRepo:             _configRepo.NewConfigRepository(DB.Mysql),
 		configRedisRep:         _configRepo.NewConfigRedisRepo(DB.Redis),
 		itemRepo:               _itemRepo.NewItemRepository(DB.Mysql),
+		itemRedisRepo:          _itemRepo.NewItemRedisRepository(DB.Redis),
 		scheduleRepo:           _scheduleRepo.NewScheduleRepository(DB.Mysql),
 	}
 }

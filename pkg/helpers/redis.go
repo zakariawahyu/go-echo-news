@@ -23,14 +23,16 @@ func KeyRedis(basePrefix string, key string) string {
 	return fmt.Sprintf("v2-%s:%s", basePrefix, key)
 }
 
-func KeyRedisRowContent(basePrefix string, types string, key string, limit int, offset int) string {
-	if types != "" {
+func KeyRedisTypeKey(basePrefix string, types string, key string, limit int, offset int) string {
+	if types != "" && limit != 0 {
 		return fmt.Sprintf("v2-%s-%s-%s:%d-%d", basePrefix, types, key, limit, offset)
+	} else if limit == 0 {
+		return fmt.Sprintf("v2-%s-%s-%s:", basePrefix, types, key)
 	}
 	return fmt.Sprintf("v2-%s:%d-%d", basePrefix, limit, offset)
 }
 
-func KeyRedisRowContentMultimedia(basePrefix string, types string, featured bool, limit int, offset int) string {
+func KeyRedisTypeFeatured(basePrefix string, types string, featured bool, limit int, offset int) string {
 	if featured {
 		return fmt.Sprintf("v2-%s-featured-%s:%d-%d", basePrefix, types, limit, offset)
 	}

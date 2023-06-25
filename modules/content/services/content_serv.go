@@ -83,7 +83,7 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 
 	var id string
 
-	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisRowContent("news-row", types, key, limit, offset))
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeKey("news-row", types, key, limit, offset))
 	if redisData != nil {
 		return entity.NewContentRowArrayResponse(redisData)
 	}
@@ -127,7 +127,7 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 
 	contents = entity.NewContentRowArrayResponse(res)
 
-	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisRowContent("news-row", types, key, limit, offset), helpers.Faster, contents); err != nil {
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("news-row", types, key, limit, offset), helpers.Faster, contents); err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
@@ -141,7 +141,7 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 
 	var id string
 
-	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisRowContent("news-row-ads", types, key, limit, offset))
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeKey("news-row-ads", types, key, limit, offset))
 	if redisData != nil {
 		return entity.NewContentRowArrayResponse(redisData)
 	}
@@ -185,7 +185,7 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 
 	contents = entity.NewContentRowArrayResponse(res)
 
-	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisRowContent("news-row-ads", types, key, limit, offset), helpers.Faster, contents); err != nil {
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("news-row-ads", types, key, limit, offset), helpers.Faster, contents); err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
@@ -199,7 +199,7 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 
 	var id string
 
-	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisRowContent("latest", types, key, limit, offset))
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeKey("latest", types, key, limit, offset))
 	if redisData != nil {
 		return entity.NewContentRowArrayResponse(redisData)
 	}
@@ -243,7 +243,7 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 
 	contents = entity.NewContentRowArrayResponse(res)
 
-	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisRowContent("latest", types, key, limit, offset), helpers.Faster, contents); err != nil {
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("latest", types, key, limit, offset), helpers.Faster, contents); err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
@@ -255,7 +255,7 @@ func (serv *contentServices) GetContentAllLatestMultimedia(ctx context.Context, 
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
-	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisRowContentMultimedia("latest", types, featured, limit, offset))
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeFeatured("latest", types, featured, limit, offset))
 	if redisData != nil {
 		return entity.NewContentRowArrayResponse(redisData)
 	}
@@ -268,7 +268,7 @@ func (serv *contentServices) GetContentAllLatestMultimedia(ctx context.Context, 
 
 	contents = entity.NewContentRowArrayResponse(res)
 
-	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisRowContentMultimedia("latest", types, featured, limit, offset), helpers.Faster, contents); err != nil {
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeFeatured("latest", types, featured, limit, offset), helpers.Faster, contents); err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
