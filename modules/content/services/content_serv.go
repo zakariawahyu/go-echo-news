@@ -82,6 +82,13 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
 	defer cancel()
 
+	var id string
+
+	newBase, err := serv.redisRepo.GetAllContentRow(c, helpers.KeyRedisRowContent("news-row", types, key, limit, offset))
+	if newBase != nil {
+		return entity.NewContentRowArrayResponse(newBase)
+	}
+
 	if types != "" {
 		if types == "channel" {
 			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
@@ -90,7 +97,7 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 				panic(err)
 			}
 
-			key = strconv.FormatInt(channel.ID, 10)
+			id = strconv.FormatInt(channel.ID, 10)
 		} else if types == "region" {
 			region, err := serv.regionRepo.GetBySlugOrId(c, key)
 			if err != nil {
@@ -98,7 +105,7 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 				panic(err)
 			}
 
-			key = strconv.FormatInt(region.ID, 10)
+			id = strconv.FormatInt(region.ID, 10)
 		} else if types == "subchannel" {
 			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
 			if err != nil {
@@ -106,21 +113,24 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 				panic(err)
 			}
 
-			key = strconv.FormatInt(subChannel.ID, 10)
+			id = strconv.FormatInt(subChannel.ID, 10)
 		} else if types != "channel" || types != "subchannel" || types != "region" {
 			serv.zapLogger.Errorf("contentServ.GetContentAllRow.NotFound, err = %s", helpers.ErrNotFound)
 			panic(helpers.ErrNotFound)
 		}
 	}
 
-	res, err := serv.contentRepo.GetAllRow(c, types, key, limit, offset)
+	res, err := serv.contentRepo.GetAllRow(c, types, id, limit, offset)
 	if err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllRow.contentRepo.GetAllRow, err = %s", err)
 		panic(err)
 	}
 
-	for _, content := range res {
-		contents = append(contents, entity.NewContentRowResponse(content))
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.redisRepo.SetALlContentRow(c, helpers.KeyRedisRowContent("news-row", types, key, limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.redisRepo.SetContent, err = %s", err)
+		panic(err)
 	}
 
 	return contents

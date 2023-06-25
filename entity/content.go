@@ -160,6 +160,16 @@ func NewContentRowResponse(content *ContentRowResponse) ContentRowResponse {
 	}
 }
 
+func NewContentRowArrayResponse(content []*ContentRowResponse) []ContentRowResponse {
+	contentRes := []ContentRowResponse{}
+
+	for _, value := range content {
+		contentRes = append(contentRes, NewContentRowResponse(value))
+	}
+
+	return contentRes
+}
+
 func (c *Content) IsEmpty() bool {
 	return reflect.DeepEqual(c, Content{})
 }

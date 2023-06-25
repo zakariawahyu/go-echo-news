@@ -23,6 +23,13 @@ func KeyRedis(basePrefix string, key string) string {
 	return fmt.Sprintf("v2-%s:%s", basePrefix, key)
 }
 
+func KeyRedisRowContent(basePrefix string, types string, key string, limit int, offset int) string {
+	if types != "" {
+		return fmt.Sprintf("v2-%s-%s-%s:%d-%d", basePrefix, types, key, limit, offset)
+	}
+	return fmt.Sprintf("v2-%s:%d-%d", basePrefix, limit, offset)
+}
+
 func TtlRedis(ttl int) time.Duration {
 	return time.Second * time.Duration(ttl)
 }

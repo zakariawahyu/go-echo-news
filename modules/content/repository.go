@@ -14,6 +14,8 @@ type ContentRepository interface {
 }
 
 type ContentRedisRepository interface {
+	GetAllContentRow(ctx context.Context, key string) ([]*entity.ContentRowResponse, error)
 	GetContent(ctx context.Context, key string) (*entity.Content, error)
+	SetALlContentRow(ctx context.Context, key string, ttl int, content []entity.ContentRowResponse) error
 	SetContent(ctx context.Context, key string, ttl int, content *entity.Content) error
 }
