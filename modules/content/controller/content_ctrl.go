@@ -201,3 +201,45 @@ func (ctrl *ContentController) NewsRowLatestInfografisFeaturedAll(ctx echo.Conte
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
 }
+
+func (ctrl *ContentController) HeadlineAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+	types := ctx.Param("type")
+	key := ctx.Param("key")
+
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	if err != nil {
+		ctrl.zapLogger.Errorf("contentCtrl.HeadlineAll.QueryParamsBinder, err = %s", err)
+		panic(err)
+	}
+
+	contents := ctrl.contentServices.GetContentAllHeadline(c, types, key, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}
+
+func (ctrl *ContentController) HeadlineAdsAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+	types := ctx.Param("type")
+	key := ctx.Param("key")
+
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	if err != nil {
+		ctrl.zapLogger.Errorf("contentCtrl.HeadlineAdsAll.QueryParamsBinder, err = %s", err)
+		panic(err)
+	}
+
+	contents := ctrl.contentServices.GetContentAllHeadlineAds(c, types, key, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}

@@ -88,5 +88,10 @@ func NewHandler(cfg *config.Config, serv *Services, logger logger.Logger) {
 	v2.GET("/latest-featured-photo", contentController.NewsRowLatestPhotoFeaturedAll)
 	v2.GET("/latest-featured-infografis", contentController.NewsRowLatestInfografisFeaturedAll)
 
+	v2.GET("/headline", contentController.HeadlineAll)
+	v2.GET("/headline/:type/:key", contentController.HeadlineAll)
+	v2.GET("/headline/ads", contentController.HeadlineAdsAll)
+	v2.GET("/headline/ads/:type/:key", contentController.HeadlineAdsAll)
+
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

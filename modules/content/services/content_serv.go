@@ -128,7 +128,7 @@ func (serv *contentServices) GetContentAllRow(ctx context.Context, types string,
 	contents = entity.NewContentRowArrayResponse(res)
 
 	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("news-row", types, key, limit, offset), helpers.Faster, contents); err != nil {
-		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
+		serv.zapLogger.Errorf("contentServ.GetContentAllRow.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
 
@@ -186,7 +186,7 @@ func (serv *contentServices) GetContentAllRowAds(ctx context.Context, types stri
 	contents = entity.NewContentRowArrayResponse(res)
 
 	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("news-row-ads", types, key, limit, offset), helpers.Faster, contents); err != nil {
-		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
+		serv.zapLogger.Errorf("contentServ.GetContentAllRowAds.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
 
@@ -244,7 +244,7 @@ func (serv *contentServices) GetContentAllLatest(ctx context.Context, types stri
 	contents = entity.NewContentRowArrayResponse(res)
 
 	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("latest", types, key, limit, offset), helpers.Faster, contents); err != nil {
-		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
+		serv.zapLogger.Errorf("contentServ.GetContentAllLatest.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
 
@@ -269,7 +269,123 @@ func (serv *contentServices) GetContentAllLatestMultimedia(ctx context.Context, 
 	contents = entity.NewContentRowArrayResponse(res)
 
 	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeFeatured("latest", types, featured, limit, offset), helpers.Faster, contents); err != nil {
-		serv.zapLogger.Errorf("contentServ.GetContentBySlugOrId.contentRedisRepo.SetALlContentRow, err = %s", err)
+		serv.zapLogger.Errorf("contentServ.GetContentAllLatestMultimedia.contentRedisRepo.SetALlContentRow, err = %s", err)
+		panic(err)
+	}
+
+	return contents
+}
+
+func (serv *contentServices) GetContentAllHeadline(ctx context.Context, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	var id string
+
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeKey("headline", types, key, limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
+	}
+
+	if types != "" {
+		if types == "channel" {
+			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
+			if err != nil {
+				serv.zapLogger.Errorf("contentServ.GetContentAllHeadline.channelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
+			}
+
+			id = strconv.FormatInt(channel.ID, 10)
+		} else if types == "region" {
+			region, err := serv.regionRepo.GetBySlugOrId(c, key)
+			if err != nil {
+				serv.zapLogger.Errorf("contentServ.GetContentAllHeadline.regionRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
+			}
+
+			id = strconv.FormatInt(region.ID, 10)
+		} else if types == "subchannel" {
+			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
+			if err != nil {
+				serv.zapLogger.Errorf("contentServ.GetContentAllHeadline.subChannelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
+			}
+
+			id = strconv.FormatInt(subChannel.ID, 10)
+		} else if types != "channel" || types != "subchannel" || types != "region" {
+			serv.zapLogger.Errorf("contentServ.GetContentAllHeadline.NotFound, err = %s", helpers.ErrNotFound)
+			panic(helpers.ErrNotFound)
+		}
+	}
+
+	res, err := serv.contentRepo.GetAllHeadline(c, types, id, limit, offset)
+	if err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllHeadline.contentRepo.GetAllHeadline, err = %s", err)
+		panic(err)
+	}
+
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("headline", types, key, limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllHeadline.contentRedisRepo.SetALlContentRow, err = %s", err)
+		panic(err)
+	}
+
+	return contents
+}
+
+func (serv *contentServices) GetContentAllHeadlineAds(ctx context.Context, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	var id string
+
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeKey("headline-ads", types, key, limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
+	}
+
+	if types != "" {
+		if types == "channel" {
+			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
+			if err != nil {
+				serv.zapLogger.Errorf("contentServ.GetContentAllHeadlineAds.channelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
+			}
+
+			id = strconv.FormatInt(channel.ID, 10)
+		} else if types == "region" {
+			region, err := serv.regionRepo.GetBySlugOrId(c, key)
+			if err != nil {
+				serv.zapLogger.Errorf("contentServ.GetContentAllHeadlineAds.regionRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
+			}
+
+			id = strconv.FormatInt(region.ID, 10)
+		} else if types == "subchannel" {
+			subChannel, err := serv.subChannelRepo.GetBySlugOrId(c, key)
+			if err != nil {
+				serv.zapLogger.Errorf("contentServ.GetContentAllHeadlineAds.subChannelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
+			}
+
+			id = strconv.FormatInt(subChannel.ID, 10)
+		} else if types != "channel" || types != "subchannel" || types != "region" {
+			serv.zapLogger.Errorf("contentServ.GetContentAllHeadlineAds.NotFound, err = %s", helpers.ErrNotFound)
+			panic(helpers.ErrNotFound)
+		}
+	}
+
+	res, err := serv.contentRepo.GetAllHeadlineAds(c, types, id, limit, offset)
+	if err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllHeadlineAds.contentRepo.GetAllHeadlineAds, err = %s", err)
+		panic(err)
+	}
+
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("headline-ads", types, key, limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllHeadlineAds.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
 
