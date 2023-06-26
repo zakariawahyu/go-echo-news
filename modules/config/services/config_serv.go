@@ -99,7 +99,7 @@ func (serv *configServices) GetMetas(ctx context.Context, types string, key stri
 	}
 
 	if err = serv.configRedisRepo.SetMetas(c, helpers.KeyRedisTypeKey("config", types, key, 0, 0), helpers.Slowest, data); err != nil {
-		serv.zapLogger.Errorf("configServ.GetAllConfig.configRedisRepo.SetAllConfig, err = %s", err)
+		serv.zapLogger.Errorf("configServ.GetAllConfig.configRedisRepo.SetMetas, err = %s", err)
 		panic(err)
 	}
 

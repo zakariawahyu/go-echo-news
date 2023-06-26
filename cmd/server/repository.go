@@ -33,6 +33,7 @@ type Repository struct {
 	itemRepo               item.ItemRepository
 	itemRedisRepo          item.ItemRedisRepository
 	scheduleRepo           schedule.ScheduleRepository
+	scheduleRedisRepo      schedule.ScheduleRedisRepository
 }
 
 func NewRepository(DB *db.Conn) *Repository {
@@ -49,5 +50,6 @@ func NewRepository(DB *db.Conn) *Repository {
 		itemRepo:               _itemRepo.NewItemRepository(DB.Mysql),
 		itemRedisRepo:          _itemRepo.NewItemRedisRepository(DB.Redis),
 		scheduleRepo:           _scheduleRepo.NewScheduleRepository(DB.Mysql),
+		scheduleRedisRepo:      _scheduleRepo.NewScheduleRedisRepository(DB.Redis),
 	}
 }

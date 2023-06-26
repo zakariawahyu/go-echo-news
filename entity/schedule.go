@@ -15,7 +15,7 @@ type Schedule struct {
 	Image         string    `json:"image"`
 	Content       string    `json:"content"`
 	IsActive      bool      `json:"is_active"`
-	PublishDate   time.Time `json:"published_at"`
+	PublishDate   time.Time `json:"publish_date"`
 	ExpiredDate   time.Time `json:"expired_date"`
 }
 
@@ -29,11 +29,11 @@ type ScheduleResponse struct {
 	Image         string    `json:"image"`
 	Content       string    `json:"content"`
 	IsActive      bool      `json:"is_active"`
-	PublishDate   time.Time `json:"published_at"`
+	PublishDate   time.Time `json:"publish_date"`
 	ExpiredDate   time.Time `json:"expired_date"`
 }
 
-func NewScheduleResponse(schedule *Schedule) ScheduleResponse {
+func NewScheduleResponse(schedule *ScheduleResponse) ScheduleResponse {
 	return ScheduleResponse{
 		ID:          schedule.ID,
 		RelationID:  schedule.RelationID,

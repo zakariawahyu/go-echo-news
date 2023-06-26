@@ -17,18 +17,18 @@ func NewScheduleRepository(DB *bun.DB) schedule.ScheduleRepository {
 	}
 }
 
-func (repo *scheduleRepository) GetAll(ctx context.Context) ([]*entity.Schedule, error) {
-	schedule := []*entity.Schedule{}
+func (repo *scheduleRepository) GetAll(ctx context.Context) ([]*entity.ScheduleResponse, error) {
+	schedule := []*entity.ScheduleResponse{}
 
-	if err := repo.DB.NewSelect().Model(&schedule).Group("specific_key").Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(&schedule).Scan(ctx); err != nil {
 		return nil, err
 	}
 
 	return schedule, nil
 }
 
-func (repo *scheduleRepository) GetBySpecificKey(ctx context.Context, key string) (*entity.Schedule, error) {
-	schedule := &entity.Schedule{}
+func (repo *scheduleRepository) GetBySpecificKey(ctx context.Context, key string) (*entity.ScheduleResponse, error) {
+	schedule := &entity.ScheduleResponse{}
 
 	if err := repo.DB.NewSelect().Model(schedule).Where("specific_key = ? ", key).Scan(ctx); err != nil {
 		return nil, err

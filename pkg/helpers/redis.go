@@ -23,6 +23,10 @@ func KeyRedis(basePrefix string, key string) string {
 	return fmt.Sprintf("v2-%s:%s", basePrefix, key)
 }
 
+func KeyRedisType(basePrefix string, types string) string {
+	return fmt.Sprintf("v2-%s-%s:", basePrefix, types)
+}
+
 func KeyRedisTypeKey(basePrefix string, types string, key string, limit int, offset int) string {
 	if types != "" && limit != 0 {
 		return fmt.Sprintf("v2-%s-%s-%s:%d-%d", basePrefix, types, key, limit, offset)
