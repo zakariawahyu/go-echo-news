@@ -14,6 +14,8 @@ type ContentRepository interface {
 	GetAllHeadline(ctx context.Context, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error)
 	GetAllHeadlineAds(ctx context.Context, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error)
 	GetAllMultimediaRow(ctx context.Context, multimediaType string, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error)
+	GetAllArticleRow(ctx context.Context, limit int, offset int) ([]*entity.ContentRowResponse, error)
+	GetAllEditorChoiceRow(ctx context.Context, limit int, offset int) ([]*entity.ContentRowResponse, error)
 }
 
 type ContentRedisRepository interface {

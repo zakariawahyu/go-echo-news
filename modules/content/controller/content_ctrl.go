@@ -306,3 +306,41 @@ func (ctrl *ContentController) MultimediaRowInfografisAll(ctx echo.Context) erro
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
 }
+
+func (ctrl *ContentController) ArticleRowAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	if err != nil {
+		ctrl.zapLogger.Errorf("contentCtrl.ArticleRowAll.QueryParamsBinder, err = %s", err)
+		panic(err)
+	}
+
+	contents := ctrl.contentServices.GetContentAllArticleRow(c, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}
+
+func (ctrl *ContentController) EditorChoiceRowAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	if err != nil {
+		ctrl.zapLogger.Errorf("contentCtrl.EditorChoiceRowAll.QueryParamsBinder, err = %s", err)
+		panic(err)
+	}
+
+	contents := ctrl.contentServices.GetContentAllEditorChoiceRow(c, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}

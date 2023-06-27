@@ -449,3 +449,53 @@ func (serv *contentServices) GetContentAllMultimediaRow(ctx context.Context, mul
 
 	return contents
 }
+
+func (serv *contentServices) GetContentAllArticleRow(ctx context.Context, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeKey("article-row", "", "", limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
+	}
+
+	res, err := serv.contentRepo.GetAllArticleRow(c, limit, offset)
+	if err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllArticleRow.contentRepo.GetAllArticleRow, err = %s", err)
+		panic(err)
+	}
+
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("article-row", "", "", limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllArticleRow.contentRedisRepo.SetALlContentRow, err = %s", err)
+		panic(err)
+	}
+
+	return contents
+}
+
+func (serv *contentServices) GetContentAllEditorChoiceRow(ctx context.Context, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeKey("editor-choice", "", "", limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
+	}
+
+	res, err := serv.contentRepo.GetAllEditorChoiceRow(c, limit, offset)
+	if err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllEditorChoiceRow.contentRepo.GetAllEditorChoiceRow, err = %s", err)
+		panic(err)
+	}
+
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("editor-choice", "", "", limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllEditorChoiceRow.contentRedisRepo.SetALlContentRow, err = %s", err)
+		panic(err)
+	}
+
+	return contents
+}
