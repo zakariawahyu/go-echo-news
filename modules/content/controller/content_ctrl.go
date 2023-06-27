@@ -285,3 +285,24 @@ func (ctrl *ContentController) MultimediaRowPhotoAll(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
 }
+
+func (ctrl *ContentController) MultimediaRowInfografisAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+	types := ctx.Param("type")
+	key := ctx.Param("key")
+
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	if err != nil {
+		ctrl.zapLogger.Errorf("contentCtrl.MultimediaRowInfografisAll.QueryParamsBinder, err = %s", err)
+		panic(err)
+	}
+
+	contents := ctrl.contentServices.GetContentAllMultimediaRow(c, "infografis", types, key, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}
