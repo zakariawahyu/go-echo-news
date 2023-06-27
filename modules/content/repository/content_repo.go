@@ -303,3 +303,47 @@ func (repo *contentRepository) GetAllHeadlineAds(ctx context.Context, types stri
 
 	return content, nil
 }
+
+func (repo *contentRepository) GetAllMultimediaRow(ctx context.Context, multimediaType string, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error) {
+	content := []*entity.ContentRowResponse{}
+
+	if err := repo.DB.NewSelect().Model(&content).
+		Apply(func(q *bun.SelectQuery) *bun.SelectQuery { //Relation Function
+			q = q.Relation("Channel").Relation("SubChannel").Relation("Region")
+			if multimediaType == "photo" {
+				q = q.Relation("SubPhotos")
+			}
+			return q
+		}).
+		Where("content_row_response.is_active = ?", true).
+		Where("content_row_response.type = ?", multimediaType).
+		WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+			return q.Where("ads_position is null").WhereOr("ads_position = 0")
+		}).
+		Apply(func(q *bun.SelectQuery) *bun.SelectQuery {
+			if types != "" {
+				if types == "channel" {
+					q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+						return q.Where("type_id = ?", key).Where("type_child_id is not null")
+					})
+				} else if types == "region" {
+					q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+						return q.Where("type_id = ?", key).Where("type_child_id is null")
+					})
+				} else if types == "subchannel" {
+					q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+						return q.Where("type_child_id = ?", key)
+					})
+				}
+			}
+			return q
+		}).
+		Order("published_date desc").
+		Limit(limit).
+		Offset(offset).
+		Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}

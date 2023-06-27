@@ -93,5 +93,8 @@ func NewHandler(cfg *config.Config, serv *Services, logger logger.Logger) {
 	v2.GET("/headline/ads", contentController.HeadlineAdsAll)
 	v2.GET("/headline/ads/:type/:key", contentController.HeadlineAdsAll)
 
+	v2.GET("/video-row", contentController.MultimediaRowVideoAll)
+	v2.GET("/video-row/:type/:key", contentController.MultimediaRowVideoAll)
+
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

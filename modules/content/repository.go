@@ -13,6 +13,7 @@ type ContentRepository interface {
 	GetAllLatestMultimedia(ctx context.Context, types string, featured bool, limit int, offset int) ([]*entity.ContentRowResponse, error)
 	GetAllHeadline(ctx context.Context, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error)
 	GetAllHeadlineAds(ctx context.Context, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error)
+	GetAllMultimediaRow(ctx context.Context, multimediaType string, types string, key string, limit int, offset int) ([]*entity.ContentRowResponse, error)
 }
 
 type ContentRedisRepository interface {
