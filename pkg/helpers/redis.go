@@ -51,6 +51,14 @@ func KeyRedisMultimediaTypeKey(multimediaType string, basePrefix string, types s
 	return fmt.Sprintf("v2-%s-%s-%s-%s:%d-%d", multimediaType, basePrefix, types, key, limit, offset)
 }
 
+func KeyRedisTypeKeyDate(basePrefix string, types string, key string, date string, limit int, offset int) string {
+	if types == "" {
+		return fmt.Sprintf("v2-%s:%d-%d", basePrefix, limit, offset)
+	}
+
+	return fmt.Sprintf("v2-%s-%s-%s-%s:%d-%d", basePrefix, types, key, date, limit, offset)
+}
+
 func TtlRedis(ttl int) time.Duration {
 	return time.Second * time.Duration(ttl)
 }

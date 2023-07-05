@@ -8,6 +8,7 @@ import (
 	"github.com/zakariawahyu/go-echo-news/modules/recommended_content"
 	"github.com/zakariawahyu/go-echo-news/modules/region"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
+	"github.com/zakariawahyu/go-echo-news/modules/suplemen"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"strconv"
@@ -21,11 +22,12 @@ type contentServices struct {
 	channelRepo            channel.ChannelRepository
 	subChannelRepo         sub_channel.SubChannelRepository
 	regionRepo             region.RegionRepository
+	suplemenRepo           suplemen.SuplemenRepository
 	zapLogger              logger.Logger
 	contextTimeout         time.Duration
 }
 
-func NewContentServices(contentRepo content.ContentRepository, contentRedisRepo content.ContentRedisRepository, recommendedContentRepo recommended_content.RecommendedContentRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, zapLogger logger.Logger, timeout time.Duration) content.ContentServices {
+func NewContentServices(contentRepo content.ContentRepository, contentRedisRepo content.ContentRedisRepository, recommendedContentRepo recommended_content.RecommendedContentRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, suplemenRepo suplemen.SuplemenRepository, zapLogger logger.Logger, timeout time.Duration) content.ContentServices {
 	return &contentServices{
 		contentRepo:            contentRepo,
 		contentRedisRepo:       contentRedisRepo,
@@ -33,6 +35,7 @@ func NewContentServices(contentRepo content.ContentRepository, contentRedisRepo 
 		channelRepo:            channelRepo,
 		subChannelRepo:         subChannelRepo,
 		regionRepo:             regionRepo,
+		suplemenRepo:           suplemenRepo,
 		zapLogger:              zapLogger,
 		contextTimeout:         timeout,
 	}
@@ -494,6 +497,63 @@ func (serv *contentServices) GetContentAllEditorChoiceRow(ctx context.Context, l
 
 	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("editor-choice", "", "", limit, offset), helpers.Faster, contents); err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllEditorChoiceRow.contentRedisRepo.SetALlContentRow, err = %s", err)
+		panic(err)
+	}
+
+	return contents
+}
+
+func (serv *contentServices) GetContentAllIndeksRow(ctx context.Context, types string, key string, date string, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	var id string
+
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeKeyDate("indeks", types, key, date, limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
+	}
+
+	if types == "channel" {
+		if key == "video" || key == "photo" || key == "infografis" || key == "multimedia" {
+			id = key
+		} else {
+			channel, err := serv.channelRepo.GetBySlugOrId(c, key)
+			if err != nil {
+				serv.zapLogger.Errorf("contentServ.GetContentAllIndeksRow.channelRepo.GetBySlugOrId, err = %s", err)
+				panic(err)
+			}
+
+			id = strconv.FormatInt(channel.ID, 10)
+		}
+	} else if types == "region" {
+		region, err := serv.regionRepo.GetBySlugOrId(c, key)
+		if err != nil {
+			serv.zapLogger.Errorf("contentServ.GetContentAllIndeksRow.regionRepo.GetBySlugOrId, err = %s", err)
+			panic(err)
+		}
+
+		id = strconv.FormatInt(region.ID, 10)
+	} else if types == "suplemen" {
+		suplemen, err := serv.suplemenRepo.GetBySlugOrId(c, key)
+		if err != nil {
+			serv.zapLogger.Errorf("contentServ.GetContentAllIndeksRow.regionRepo.GetBySlugOrId, err = %s", err)
+			panic(err)
+		}
+
+		id = strconv.FormatInt(suplemen.ID, 10)
+	}
+
+	res, err := serv.contentRepo.GetAllIndeks(c, types, id, date, limit, offset)
+	if err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllIndeksRow.contentRepo.GetAllIndeks, err = %s", err)
+		panic(err)
+	}
+
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKeyDate("indeks", types, key, date, limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllIndeksRow.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
 

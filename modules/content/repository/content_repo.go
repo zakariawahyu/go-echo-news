@@ -389,3 +389,49 @@ func (repo *contentRepository) GetAllEditorChoiceRow(ctx context.Context, limit 
 
 	return content, nil
 }
+
+func (repo *contentRepository) GetAllIndeks(ctx context.Context, types string, key string, date string, limit int, offset int) ([]*entity.ContentRowResponse, error) {
+	content := []*entity.ContentRowResponse{}
+
+	if err := repo.DB.NewSelect().Model(&content).
+		Relation("Region").
+		Relation("Channel").
+		Relation("SubChannel").
+		Relation("SubPhotos").
+		Where("content_row_response.is_active = ?", true).
+		Apply(func(q *bun.SelectQuery) *bun.SelectQuery {
+			if date != "" && date != "all" {
+				q = q.Where("published_date = ?", date)
+			}
+			if types != "" && types != "all" {
+				if types == "channel" {
+					if key == "video" || key == "photo" || key == "infografis" {
+						q = q.Where("type = ?", key)
+					} else if key == "multimedia" {
+						q = q.Where("type IN (?)", bun.In([]string{"video", "photo", "infografis"}))
+					} else {
+						q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+							return q.Where("type_id = ?", key).Where("type_child_id is not null")
+						})
+					}
+				} else if types == "region" {
+					q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+						return q.Where("type_id = ?", key).Where("type_child_id is null")
+					})
+				} else if types == "suplemen" {
+					q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
+						return q.Where("suplemen_id = ?", key).Where("type_id is not null")
+					})
+				}
+			}
+			return q
+		}).
+		Order("published_date desc").
+		Limit(limit).
+		Offset(offset).
+		Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}

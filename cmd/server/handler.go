@@ -104,6 +104,9 @@ func NewHandler(cfg *config.Config, serv *Services, logger logger.Logger) {
 	v2.GET("/article-row", contentController.ArticleRowAll)
 	v2.GET("/editor-choice", contentController.EditorChoiceRowAll)
 
+	v2.GET("/indeks", contentController.IndeksRowAll)
+	v2.GET("/indeks/:type/:key/:date", contentController.IndeksRowAll)
+
 	v2.GET("/suplemen", suplemenController.AllSuplemen)
 	v2.GET("/suplemen/:slug", suplemenController.SuplemenBySlugOrId)
 

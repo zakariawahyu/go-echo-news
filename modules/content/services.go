@@ -16,4 +16,5 @@ type ContentServices interface {
 	GetContentAllMultimediaRow(ctx context.Context, multimediaType string, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse)
 	GetContentAllArticleRow(ctx context.Context, limit int, offset int) (contents []entity.ContentRowResponse)
 	GetContentAllEditorChoiceRow(ctx context.Context, limit int, offset int) (contents []entity.ContentRowResponse)
+	GetContentAllIndeksRow(ctx context.Context, types string, key string, date string, limit int, offset int) (contents []entity.ContentRowResponse)
 }

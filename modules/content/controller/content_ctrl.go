@@ -344,3 +344,25 @@ func (ctrl *ContentController) EditorChoiceRowAll(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
 }
+
+func (ctrl *ContentController) IndeksRowAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+	types := ctx.Param("type")
+	key := ctx.Param("key")
+	date := ctx.Param("date")
+
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	if err != nil {
+		ctrl.zapLogger.Errorf("contentCtrl.EditorChoiceRowAll.QueryParamsBinder, err = %s", err)
+		panic(err)
+	}
+
+	contents := ctrl.contentServices.GetContentAllIndeksRow(c, types, key, date, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}
