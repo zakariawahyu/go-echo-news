@@ -13,6 +13,7 @@ import (
 	_regionController "github.com/zakariawahyu/go-echo-news/modules/region/controller"
 	_scheduleController "github.com/zakariawahyu/go-echo-news/modules/schedule/controller"
 	_subChannelController "github.com/zakariawahyu/go-echo-news/modules/sub_channel/controller"
+	_suplemenController "github.com/zakariawahyu/go-echo-news/modules/suplemen/controller"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"log"
@@ -52,6 +53,7 @@ func NewHandler(cfg *config.Config, serv *Services, logger logger.Logger) {
 	configController := _configController.NewConfigController(serv.configServices)
 	itemController := _itemController.NewItemController(serv.itemServices)
 	scheduleController := _scheduleController.NewScheduleController(serv.scheduleServices)
+	suplemenController := _suplemenController.NewSuplemenController(serv.suplemenServices)
 
 	v1 := e.Group("/v1")
 	v2 := e.Group("/v2")
@@ -101,6 +103,9 @@ func NewHandler(cfg *config.Config, serv *Services, logger logger.Logger) {
 	v2.GET("/infografis-row/:type/:key", contentController.MultimediaRowInfografisAll)
 	v2.GET("/article-row", contentController.ArticleRowAll)
 	v2.GET("/editor-choice", contentController.EditorChoiceRowAll)
+
+	v2.GET("/suplemen", suplemenController.AllSuplemen)
+	v2.GET("/suplemen/:slug", suplemenController.SuplemenBySlugOrId)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

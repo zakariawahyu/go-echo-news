@@ -24,3 +24,22 @@ type SuplemenResponse struct {
 	Name          string `json:"name"`
 	Slug          string `json:"slug"`
 }
+
+func NewSuplemenResponse(suplemen *SuplemenResponse) SuplemenResponse {
+	return SuplemenResponse{
+		ID:       suplemen.ID,
+		ParentID: suplemen.ParentID,
+		Name:     suplemen.Name,
+		Slug:     suplemen.Slug,
+	}
+}
+
+func NewSuplemenArrayResponse(suplemen []*SuplemenResponse) []SuplemenResponse {
+	suplemenRes := []SuplemenResponse{}
+
+	for _, value := range suplemen {
+		suplemenRes = append(suplemenRes, NewSuplemenResponse(value))
+	}
+
+	return suplemenRes
+}

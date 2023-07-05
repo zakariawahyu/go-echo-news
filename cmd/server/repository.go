@@ -17,6 +17,8 @@ import (
 	_scheduleRepo "github.com/zakariawahyu/go-echo-news/modules/schedule/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
 	_subChannelRepository "github.com/zakariawahyu/go-echo-news/modules/sub_channel/repository"
+	"github.com/zakariawahyu/go-echo-news/modules/suplemen"
+	_suplemenRepo "github.com/zakariawahyu/go-echo-news/modules/suplemen/repository"
 	"github.com/zakariawahyu/go-echo-news/pkg/db"
 )
 
@@ -34,6 +36,7 @@ type Repository struct {
 	itemRedisRepo          item.ItemRedisRepository
 	scheduleRepo           schedule.ScheduleRepository
 	scheduleRedisRepo      schedule.ScheduleRedisRepository
+	suplemenRepo           suplemen.SuplemenRepository
 }
 
 func NewRepository(DB *db.Conn) *Repository {
@@ -51,5 +54,6 @@ func NewRepository(DB *db.Conn) *Repository {
 		itemRedisRepo:          _itemRepo.NewItemRedisRepository(DB.Redis),
 		scheduleRepo:           _scheduleRepo.NewScheduleRepository(DB.Mysql),
 		scheduleRedisRepo:      _scheduleRepo.NewScheduleRedisRepository(DB.Redis),
+		suplemenRepo:           _suplemenRepo.NewSuplemenRepository(DB.Mysql),
 	}
 }
