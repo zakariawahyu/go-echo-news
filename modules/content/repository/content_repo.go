@@ -401,7 +401,9 @@ func (repo *contentRepository) GetAllIndeks(ctx context.Context, types string, k
 		Where("content_row_response.is_active = ?", true).
 		Apply(func(q *bun.SelectQuery) *bun.SelectQuery {
 			if date != "" && date != "all" {
-				q = q.Where("published_date = ?", date)
+				startDate, _ := time.Parse("2006-01-02", date)
+				endDate := startDate.AddDate(0, 0, 1)
+				q = q.Where("published_date between ? and ?", startDate, endDate)
 			}
 			if types != "" && types != "all" {
 				if types == "channel" {
