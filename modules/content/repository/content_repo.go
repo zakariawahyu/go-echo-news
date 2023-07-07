@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"github.com/uptrace/bun"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
+	"strings"
 	"time"
 )
 
@@ -424,6 +426,48 @@ func (repo *contentRepository) GetAllIndeks(ctx context.Context, types string, k
 					q = q.WhereGroup(" AND ", func(q *bun.SelectQuery) *bun.SelectQuery {
 						return q.Where("suplemen_id = ?", key).Where("type_id is not null")
 					})
+				}
+			}
+			return q
+		}).
+		Order("published_date desc").
+		Limit(limit).
+		Offset(offset).
+		Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}
+
+func (repo *contentRepository) GetAllSearch(ctx context.Context, types string, key interface{}, limit int, offset int) ([]*entity.ContentRowResponse, error) {
+	content := []*entity.ContentRowResponse{}
+
+	if err := repo.DB.NewSelect().Model(&content).
+		Relation("Region").
+		Relation("Channel").
+		Relation("SubChannel").
+		Relation("SubPhotos").
+		Where("content_row_response.is_active = ?", true).
+		Apply(func(q *bun.SelectQuery) *bun.SelectQuery {
+			if types == "keyword" {
+				sliceKey := []string{"%", fmt.Sprintf("%s", key), "%"}
+				q = q.Where("? like ?", bun.Ident("content_row_response.title"), strings.Join(sliceKey, ""))
+			} else if types == "tag" || types == "tag-headline" {
+				q = q.Where("content_row_response.id IN (?)", bun.In(key))
+				if types == "tag-headline" {
+					q = q.Where("headline_type IN (?)", bun.In([]int{1, 2}))
+				} else {
+					q = q.Where("headline_type != 2")
+				}
+			} else if types == "topic" || types == "topic-headline" || types == "topic-headline-subkanal" {
+				q = q.Where("content_row_response.id IN (?)", bun.In(key))
+				if types == "topic-headline" {
+					q = q.Where("headline_type IN (?)", bun.In([]int{1, 2}))
+				} else if types == "topic-headline-subkanal" {
+					q = q.Where("headline_type IN (?)", bun.In([]int{1, 2, 3}))
+				} else {
+					q = q.Where("headline_type != 2")
 				}
 			}
 			return q

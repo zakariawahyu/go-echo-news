@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
+	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/zakariawahyu/go-echo-news/config"
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/pkg/exception"
@@ -15,6 +16,7 @@ func InitMysql(cfg *config.Config) *bun.DB {
 	exception.PanicIfNeeded(err)
 
 	db := bun.NewDB(sqldb, mysqldialect.New())
+	db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 
 	db.SetMaxIdleConns(cfg.DB.MaxIdleConns)
 	db.SetMaxOpenConns(cfg.DB.MaxOpenConns)

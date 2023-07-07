@@ -7,6 +7,8 @@ import (
 	_configRepo "github.com/zakariawahyu/go-echo-news/modules/config/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
 	_contentRepository "github.com/zakariawahyu/go-echo-news/modules/content/repository"
+	"github.com/zakariawahyu/go-echo-news/modules/content_has"
+	_contentHas "github.com/zakariawahyu/go-echo-news/modules/content_has/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/item"
 	_itemRepo "github.com/zakariawahyu/go-echo-news/modules/item/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/recommended_content"
@@ -19,6 +21,10 @@ import (
 	_subChannelRepository "github.com/zakariawahyu/go-echo-news/modules/sub_channel/repository"
 	"github.com/zakariawahyu/go-echo-news/modules/suplemen"
 	_suplemenRepo "github.com/zakariawahyu/go-echo-news/modules/suplemen/repository"
+	"github.com/zakariawahyu/go-echo-news/modules/tag"
+	_tagRepo "github.com/zakariawahyu/go-echo-news/modules/tag/repository"
+	"github.com/zakariawahyu/go-echo-news/modules/topic"
+	_topicRepo "github.com/zakariawahyu/go-echo-news/modules/topic/repository"
 	"github.com/zakariawahyu/go-echo-news/pkg/db"
 )
 
@@ -38,6 +44,10 @@ type Repository struct {
 	scheduleRedisRepo      schedule.ScheduleRedisRepository
 	suplemenRepo           suplemen.SuplemenRepository
 	suplemenRedisRepo      suplemen.SuplemenRedisRepository
+	tagRepo                tag.TagRepository
+	topicRepo              topic.TopicRepository
+	contentHasTag          content_has.ContentHasTagRepository
+	contentHasTopic        content_has.ContentHasTopicRepository
 }
 
 func NewRepository(DB *db.Conn) *Repository {
@@ -57,5 +67,9 @@ func NewRepository(DB *db.Conn) *Repository {
 		scheduleRedisRepo:      _scheduleRepo.NewScheduleRedisRepository(DB.Redis),
 		suplemenRepo:           _suplemenRepo.NewSuplemenRepository(DB.Mysql),
 		suplemenRedisRepo:      _suplemenRepo.NewSuplemenRedisRepository(DB.Redis),
+		tagRepo:                _tagRepo.NewTagRepository(DB.Mysql),
+		topicRepo:              _topicRepo.NewTopicRepository(DB.Mysql),
+		contentHasTag:          _contentHas.NewContentHasTagRepository(DB.Mysql),
+		contentHasTopic:        _contentHas.NewContentHasTopicRepository(DB.Mysql),
 	}
 }

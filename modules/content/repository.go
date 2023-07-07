@@ -17,6 +17,7 @@ type ContentRepository interface {
 	GetAllArticleRow(ctx context.Context, limit int, offset int) ([]*entity.ContentRowResponse, error)
 	GetAllEditorChoiceRow(ctx context.Context, limit int, offset int) ([]*entity.ContentRowResponse, error)
 	GetAllIndeks(ctx context.Context, types string, key string, date string, limit int, offset int) ([]*entity.ContentRowResponse, error)
+	GetAllSearch(ctx context.Context, types string, key interface{}, limit int, offset int) ([]*entity.ContentRowResponse, error)
 }
 
 type ContentRedisRepository interface {

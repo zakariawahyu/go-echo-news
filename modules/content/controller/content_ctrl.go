@@ -358,11 +358,32 @@ func (ctrl *ContentController) IndeksRowAll(ctx echo.Context) error {
 		Int("offset", &payloads.Offset).
 		BindError()
 	if err != nil {
-		ctrl.zapLogger.Errorf("contentCtrl.EditorChoiceRowAll.QueryParamsBinder, err = %s", err)
+		ctrl.zapLogger.Errorf("contentCtrl.IndeksRowAll.QueryParamsBinder, err = %s", err)
 		panic(err)
 	}
 
 	contents := ctrl.contentServices.GetContentAllIndeksRow(c, types, key, date, payloads.Limit, payloads.Offset)
+
+	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
+}
+
+func (ctrl *ContentController) SearchRowAll(ctx echo.Context) error {
+	c := ctx.Request().Context()
+	types := ctx.Param("type")
+	key := ctx.Param("key")
+
+	payloads := payload.NewPayload()
+
+	err := echo.QueryParamsBinder(ctx).
+		Int("limit", &payloads.Limit).
+		Int("offset", &payloads.Offset).
+		BindError()
+	if err != nil {
+		ctrl.zapLogger.Errorf("contentCtrl.SearchAll.QueryParamsBinder, err = %s", err)
+		panic(err)
+	}
+
+	contents := ctrl.contentServices.GetContentAllSearchRow(c, types, key, payloads.Limit, payloads.Offset)
 
 	return ctx.JSON(http.StatusOK, response.NewSuccessResponse(http.StatusOK, contents))
 }

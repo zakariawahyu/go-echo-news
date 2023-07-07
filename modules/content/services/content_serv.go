@@ -5,10 +5,13 @@ import (
 	"github.com/zakariawahyu/go-echo-news/entity"
 	"github.com/zakariawahyu/go-echo-news/modules/channel"
 	"github.com/zakariawahyu/go-echo-news/modules/content"
+	"github.com/zakariawahyu/go-echo-news/modules/content_has"
 	"github.com/zakariawahyu/go-echo-news/modules/recommended_content"
 	"github.com/zakariawahyu/go-echo-news/modules/region"
 	"github.com/zakariawahyu/go-echo-news/modules/sub_channel"
 	"github.com/zakariawahyu/go-echo-news/modules/suplemen"
+	"github.com/zakariawahyu/go-echo-news/modules/tag"
+	"github.com/zakariawahyu/go-echo-news/modules/topic"
 	"github.com/zakariawahyu/go-echo-news/pkg/helpers"
 	"github.com/zakariawahyu/go-echo-news/pkg/logger"
 	"strconv"
@@ -23,11 +26,15 @@ type contentServices struct {
 	subChannelRepo         sub_channel.SubChannelRepository
 	regionRepo             region.RegionRepository
 	suplemenRepo           suplemen.SuplemenRepository
+	tagRepo                tag.TagRepository
+	topicRepo              topic.TopicRepository
+	contentHasTagRepo      content_has.ContentHasTagRepository
+	contentHasTopicRepo    content_has.ContentHasTopicRepository
 	zapLogger              logger.Logger
 	contextTimeout         time.Duration
 }
 
-func NewContentServices(contentRepo content.ContentRepository, contentRedisRepo content.ContentRedisRepository, recommendedContentRepo recommended_content.RecommendedContentRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, suplemenRepo suplemen.SuplemenRepository, zapLogger logger.Logger, timeout time.Duration) content.ContentServices {
+func NewContentServices(contentRepo content.ContentRepository, contentRedisRepo content.ContentRedisRepository, recommendedContentRepo recommended_content.RecommendedContentRepository, channelRepo channel.ChannelRepository, subChannelRepo sub_channel.SubChannelRepository, regionRepo region.RegionRepository, suplemenRepo suplemen.SuplemenRepository, tagRepo tag.TagRepository, topicRepo topic.TopicRepository, contentHasTagRepo content_has.ContentHasTagRepository, contentHasTopicRepo content_has.ContentHasTopicRepository, zapLogger logger.Logger, timeout time.Duration) content.ContentServices {
 	return &contentServices{
 		contentRepo:            contentRepo,
 		contentRedisRepo:       contentRedisRepo,
@@ -36,6 +43,10 @@ func NewContentServices(contentRepo content.ContentRepository, contentRedisRepo 
 		subChannelRepo:         subChannelRepo,
 		regionRepo:             regionRepo,
 		suplemenRepo:           suplemenRepo,
+		tagRepo:                tagRepo,
+		topicRepo:              topicRepo,
+		contentHasTagRepo:      contentHasTagRepo,
+		contentHasTopicRepo:    contentHasTopicRepo,
 		zapLogger:              zapLogger,
 		contextTimeout:         timeout,
 	}
@@ -554,6 +565,71 @@ func (serv *contentServices) GetContentAllIndeksRow(ctx context.Context, types s
 
 	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKeyDate("indeks", types, key, date, limit, offset), helpers.Faster, contents); err != nil {
 		serv.zapLogger.Errorf("contentServ.GetContentAllIndeksRow.contentRedisRepo.SetALlContentRow, err = %s", err)
+		panic(err)
+	}
+
+	return contents
+}
+
+func (serv *contentServices) GetContentAllSearchRow(ctx context.Context, types string, key string, limit int, offset int) (contents []entity.ContentRowResponse) {
+	c, cancel := context.WithTimeout(ctx, serv.contextTimeout)
+	defer cancel()
+
+	var data interface{}
+	var contentIds []int64
+
+	redisData, err := serv.contentRedisRepo.GetAllContentRow(c, helpers.KeyRedisTypeKey("search", types, key, limit, offset))
+	if redisData != nil {
+		return entity.NewContentRowArrayResponse(redisData)
+	}
+
+	if types == "tag" || types == "tag-headline" {
+		tag, err := serv.tagRepo.GetBySlugOrID(c, key)
+		if err != nil {
+			serv.zapLogger.Errorf("contentServ.GetContentAllSearchRow.tagRepo.GetBySlugOrID, err = %s", err)
+			panic(err)
+		}
+
+		contentId, err := serv.contentHasTagRepo.GetByTagIDLimited(c, tag.ID, limit)
+		for _, value := range contentId {
+			contentIds = append(contentIds, value.ContentID)
+		}
+		if err != nil {
+			serv.zapLogger.Errorf("contentServ.GetContentAllSearchRow.contentHasTagRepo.GetByTagID, err = %s", err)
+			panic(err)
+		}
+
+		data = contentIds
+	} else if types == "topic" || types == "topic-headline" || types == "topic-headline-subkanal" {
+		topic, err := serv.topicRepo.GetBySlugOrID(c, key)
+		if err != nil {
+			serv.zapLogger.Errorf("contentServ.GetContentAllSearchRow.topicRepo.GetBySlugOrID, err = %s", err)
+			panic(err)
+		}
+
+		contentId, err := serv.contentHasTopicRepo.GetByTopicIDLimited(c, topic.ID, limit)
+		for _, value := range contentId {
+			contentIds = append(contentIds, value.ContentID)
+		}
+		if err != nil {
+			serv.zapLogger.Errorf("contentServ.GetContentAllSearchRow.contentHasTopicRepo.GetByTopicID, err = %s", err)
+			panic(err)
+		}
+		data = contentIds
+	} else {
+		data = key
+	}
+
+	res, err := serv.contentRepo.GetAllSearch(c, types, data, limit, offset)
+	if err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllSearchRow.contentRepo.GetAllSearch, err = %s", err)
+		panic(err)
+	}
+
+	contents = entity.NewContentRowArrayResponse(res)
+
+	if err = serv.contentRedisRepo.SetALlContentRow(c, helpers.KeyRedisTypeKey("search", types, key, limit, offset), helpers.Faster, contents); err != nil {
+		serv.zapLogger.Errorf("contentServ.GetContentAllSearchRow.contentRedisRepo.SetALlContentRow, err = %s", err)
 		panic(err)
 	}
 

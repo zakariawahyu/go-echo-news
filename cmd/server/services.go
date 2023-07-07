@@ -34,7 +34,7 @@ type Services struct {
 
 func NewServices(repo *Repository, zapLogger logger.Logger, timeoutContext time.Duration) *Services {
 	return &Services{
-		contentServices:    _contentServices.NewContentServices(repo.contentRepo, repo.contentRedisRepo, repo.recommendedContentRepo, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, repo.suplemenRepo, zapLogger, timeoutContext),
+		contentServices:    _contentServices.NewContentServices(repo.contentRepo, repo.contentRedisRepo, repo.recommendedContentRepo, repo.channelRepo, repo.subChannelRepo, repo.regionRepo, repo.suplemenRepo, repo.tagRepo, repo.topicRepo, repo.contentHasTag, repo.contentHasTopic, zapLogger, timeoutContext),
 		channelServices:    _channelServices.NewChannelServices(repo.channelRepo, repo.channelRedisRepo, zapLogger, timeoutContext),
 		subChannelServices: _subChannelServices.NewSubChannelServices(repo.subChannelRepo, zapLogger, timeoutContext),
 		regionServices:     _regionServices.NewRegionServices(repo.regionRepo, zapLogger, timeoutContext),
