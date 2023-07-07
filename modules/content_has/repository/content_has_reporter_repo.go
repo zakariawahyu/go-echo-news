@@ -17,10 +17,10 @@ func NewContentHasReporterRepository(DB *bun.DB) content_has.ContentHasReporterR
 	}
 }
 
-func (repo *contentHasReporterRepository) GetByReporterID(ctx context.Context, id string) ([]*entity.ContentHasReporter, error) {
+func (repo *contentHasReporterRepository) GetByReporterIDLimited(ctx context.Context, id int64, limit int) ([]*entity.ContentHasReporter, error) {
 	contentHasReporter := []*entity.ContentHasReporter{}
 
-	if err := repo.DB.NewSelect().Model(&contentHasReporter).Where("tag_id = ?", id).Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(&contentHasReporter).Where("tag_id = ?", id).Order("id desc").Limit(limit).Scan(ctx); err != nil {
 		return nil, err
 	}
 
