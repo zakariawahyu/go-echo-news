@@ -6,13 +6,13 @@ import (
 )
 
 type ContentHasTagRepository interface {
-	GetByTagID(ctx context.Context, id string) (*entity.ContentHasTag, error)
+	GetByTagID(ctx context.Context, id string) ([]*entity.ContentHasTag, error)
 }
 
 type ContentHasTopicRepository interface {
-	GetByTopicID(ctx context.Context, id string) (*entity.ContentHasTopic, error)
+	GetByTopicID(ctx context.Context, id string) ([]*entity.ContentHasTopic, error)
 }
 
 type ContentHasReporterRepository interface {
-	GetByReporterID(ctx context.Context, id string) (*entity.ContentHasReporter, error)
+	GetByReporterID(ctx context.Context, id string) ([]*entity.ContentHasReporter, error)
 }

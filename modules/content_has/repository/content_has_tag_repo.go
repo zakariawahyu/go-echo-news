@@ -17,10 +17,10 @@ func NewContentHasTagRepository(DB *bun.DB) content_has.ContentHasTagRepository 
 	}
 }
 
-func (repo *contentHasTagRepository) GetByTagID(ctx context.Context, id string) (*entity.ContentHasTag, error) {
-	contentHasTag := &entity.ContentHasTag{}
+func (repo *contentHasTagRepository) GetByTagID(ctx context.Context, id string) ([]*entity.ContentHasTag, error) {
+	contentHasTag := []*entity.ContentHasTag{}
 
-	if err := repo.DB.NewSelect().Model(contentHasTag).Where("tag_id = ?", id).Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(&contentHasTag).Where("tag_id = ?", id).Scan(ctx); err != nil {
 		return nil, err
 	}
 

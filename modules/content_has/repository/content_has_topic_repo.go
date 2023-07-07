@@ -17,10 +17,10 @@ func NewContentHasTopicRepository(DB *bun.DB) content_has.ContentHasTopicReposit
 	}
 }
 
-func (repo *contentHasTopicRepository) GetByTopicID(ctx context.Context, id string) (*entity.ContentHasTopic, error) {
-	contentHasTopic := &entity.ContentHasTopic{}
+func (repo *contentHasTopicRepository) GetByTopicID(ctx context.Context, id string) ([]*entity.ContentHasTopic, error) {
+	contentHasTopic := []*entity.ContentHasTopic{}
 
-	if err := repo.DB.NewSelect().Model(contentHasTopic).Where("topic_id = ?", id).Scan(ctx); err != nil {
+	if err := repo.DB.NewSelect().Model(&contentHasTopic).Where("topic_id = ?", id).Scan(ctx); err != nil {
 		return nil, err
 	}
 
