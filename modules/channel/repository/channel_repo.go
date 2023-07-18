@@ -8,17 +8,17 @@ import (
 	"github.com/zakariawahyu/go-echo-news/modules/channel"
 )
 
-type channelRepository struct {
+type ChannelRepository struct {
 	DB *bun.DB
 }
 
 func NewChannelRepository(DB *bun.DB) channel.ChannelRepository {
-	return &channelRepository{
+	return &ChannelRepository{
 		DB: DB,
 	}
 }
 
-func (repo *channelRepository) GetAll(ctx context.Context) ([]*entity.Channel, error) {
+func (repo *ChannelRepository) GetAll(ctx context.Context) ([]*entity.Channel, error) {
 	channel := []*entity.Channel{}
 
 	if err := repo.DB.NewSelect().Model(&channel).Relation("Suplemens").Relation("SubChannels").Scan(ctx); err != nil {
@@ -28,7 +28,7 @@ func (repo *channelRepository) GetAll(ctx context.Context) ([]*entity.Channel, e
 	return channel, nil
 }
 
-func (repo *channelRepository) GetBySlugOrId(ctx context.Context, slug string) (*entity.Channel, error) {
+func (repo *ChannelRepository) GetBySlugOrId(ctx context.Context, slug string) (*entity.Channel, error) {
 	channel := &entity.Channel{}
 
 	if err := repo.DB.NewSelect().Model(channel).Relation("Suplemens").Relation("SubChannels").Where("channel.slug = ?", slug).WhereOr("channel.id = ?", slug).Scan(ctx); err != nil {
@@ -38,7 +38,7 @@ func (repo *channelRepository) GetBySlugOrId(ctx context.Context, slug string) (
 	return channel, nil
 }
 
-func (repo *channelRepository) GetMetas(ctx context.Context, slug string) (interface{}, error) {
+func (repo *ChannelRepository) GetMetas(ctx context.Context, slug string) (interface{}, error) {
 	channel := &entity.Channel{}
 
 	if err := repo.DB.NewSelect().Model(channel).ColumnExpr("title, description").Where("slug = ?", slug).Scan(ctx); err != nil {
